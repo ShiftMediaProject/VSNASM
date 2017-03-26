@@ -54,7 +54,7 @@
       HelpUrl="http://www.nasm.us/doc/"
       DisplayName="Output File Name"
       Description="Specify Output Filename."
-	  Switch="-o [value]" />
+	  Switch="-o &quot;[value]&quot;" />
 	<BoolProperty
 	  Name="GenerateDebugInformation"
 	  Category="Assembler Options"
@@ -68,7 +68,7 @@
 	  DisplayName="Include File Search Directories"
 	  Description="Sets path for include files."
 	  HelpUrl="http://www.nasm.us/doc/"
-	  Switch="-I[value]" />
+	  Switch="-I&quot;[value]/&quot;" />
 	<StringListProperty
 	  Name="PreprocessorDefinitions"
       Category="Preprocessor"
