@@ -129,9 +129,9 @@ if not exist "%VCTargetsPath%\BuildCustomizations\nasm.props" (
 
 REM Download the latest nasm binary for windows
 if "%SYSARCH%"=="x32" (
-    set NASMDOWNLOAD=%NASMDL%/%NASMVERSION%/win64/nasm-%NASMVERSION%-win64.zip
-) else if "%SYSARCH%"=="x64" (
     set NASMDOWNLOAD=%NASMDL%/%NASMVERSION%/win32/nasm-%NASMVERSION%-win32.zip
+) else if "%SYSARCH%"=="x64" (
+    set NASMDOWNLOAD=%NASMDL%/%NASMVERSION%/win64/nasm-%NASMVERSION%-win64.zip
 ) else (
     goto Terminate
 )
