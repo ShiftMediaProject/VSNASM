@@ -52,6 +52,7 @@
       OutputFormat="%(NASM.OutputFormat)"
       GenerateDebugInformation="%(NASM.GenerateDebugInformation)"
       IncludePaths="%(NASM.IncludePaths)"
+      PreIncludeFiles="%(NASM.PreIncludeFiles)"
       PreprocessorDefinitions="%(NASM.PreprocessorDefinitions)"
       UndefinePreprocessorDefinitions="%(NASM.UndefinePreprocessorDefinitions)"
       TreatWarningsAsErrors="%(NASM.TreatWarningsAsErrors)"
