@@ -4,6 +4,13 @@ REM Defined cript variables
 set NASMDL=http://www.nasm.us/pub/nasm/releasebuilds
 set NASMVERSION=2.12.02
 
+REM Store current directory and ensure working directory is the location of current .bat
+SET CALLDIR=%CD%
+cd %~dp0
+
+REM Initialise error check value
+SET ERROR=0
+
 REM Check what architecture we are installing on
 if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
     echo Detected 64 bit system...
@@ -19,6 +26,25 @@ if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
 ) else (
     echo Error: Could not detect current platform architecture!"
     goto Terminate
+)
+
+REM Check if already running in an environment with VS setup
+if defined VCINSTALLDIR (
+    if defined VisualStudioVersion (
+        echo Existing Visual Studio environment detected...
+        if "%VisualStudioVersion%"=="15.0" (
+            set MSVC_VER=15
+            goto MSVCVarsDone
+        ) else if "%VisualStudioVersion%"=="14.0" (
+            set MSVC_VER=14
+            goto MSVCVarsDone
+        ) else if "%VisualStudioVersion%"=="12.0" (
+            set MSVC_VER=12
+            goto MSVCVarsDone
+        ) else (
+            echo Unknown Visual Studio environment detected '%VisualStudioVersion%', Creating a new one...
+        )
+    )
 )
 
 REM First check for a environment variable to help locate the VS installation
@@ -161,6 +187,14 @@ if not exist "%VCINSTALLDIR%\nasm.exe" (
 )
 rd /S /Q "./TempNASMUnpack"
 echo Finished Successfully
+goto Exit
 
 :Terminate
-pause
+SET ERROR=1
+
+:Exit
+cd %CALLDIR%
+IF "%APPVEYOR%"=="" (
+    pause
+)
+exit /b %ERROR%
