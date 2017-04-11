@@ -5,8 +5,8 @@ set NASMDL=http://www.nasm.us/pub/nasm/releasebuilds
 set NASMVERSION=2.12.02
 
 REM Store current directory and ensure working directory is the location of current .bat
-SET CALLDIR=%CD%
-cd %~dp0
+set CALLDIR=%CD%
+set SCRIPTDIR=%~dp0
 
 REM Initialise error check value
 SET ERROR=0
@@ -146,7 +146,8 @@ if not "%CURRDIR%"=="%CD%" (
 
 REM copy the BuildCustomizations to VCTargets folder
 echo Installing build customisations...
-copy /B /Y /V "./nasm.*" "%VCTargetsPath%\BuildCustomizations\" 1>NUL 2>NUL
+del /F /Q "%VCTargetsPath%\BuildCustomizations\nasm.*" 1>NUL 2>NUL
+copy /B /Y /V "%SCRIPTDIR%\nasm.*" "%VCTargetsPath%\BuildCustomizations\" 1>NUL 2>NUL
 if not exist "%VCTargetsPath%\BuildCustomizations\nasm.props" (
     echo Error: Failed to copy build customisations!
     echo    Ensure that this script is run in a shell with the necessary write privileges
@@ -162,30 +163,31 @@ if "%SYSARCH%"=="x32" (
     goto Terminate
 )
 echo Downloading required NASM release binary...
-powershell.exe -Command (New-Object Net.WebClient).DownloadFile('%NASMDOWNLOAD%', './nasm.zip') 1>NUL 2>NUL
-if not exist "./nasm.zip" (
+powershell.exe -Command (New-Object Net.WebClient).DownloadFile('%NASMDOWNLOAD%', '%SCRIPTDIR%\nasm.zip') 1>NUL 2>NUL
+if not exist "%SCRIPTDIR%\nasm.zip" (
     echo Error: Failed to download required NASM binary!
     echo    The following link could not be resolved "%NASMDOWNLOAD%"
     goto Terminate
 )
-powershell.exe -Command Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('"./nasm.zip"', '"./TempNASMUnpack"') 1>NUL 2>NUL
-if not exist "./TempNASMUnpack" (
+powershell.exe -Command Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('"%SCRIPTDIR%\nasm.zip"', '"%SCRIPTDIR%\TempNASMUnpack"') 1>NUL 2>NUL
+if not exist "%SCRIPTDIR%\TempNASMUnpack" (
     echo Error: Failed to unpack NASM download!
-    del /F /Q "./nasm.zip" 1>NUL 2>NUL
+    del /F /Q "%SCRIPTDIR%\nasm.zip" 1>NUL 2>NUL
     goto Terminate
 )
-del /F /Q "./nasm.zip" 1>NUL 2>NUL
+del /F /Q "%SCRIPTDIR%\nasm.zip" 1>NUL 2>NUL
 
 REM copy nasm executable to VC installation folder
 echo Installing required NASM release binary...
-copy /B /Y /V "./TempNASMUnpack\nasm-%NASMVERSION%\*.exe" "%VCINSTALLDIR%\" 1>NUL 2>NUL
+del /F /Q "%VCINSTALLDIR%\nasm.exe" 1>NUL 2>NUL
+copy /B /Y /V "%SCRIPTDIR%\TempNASMUnpack\nasm-%NASMVERSION%\nasm.exe" "%VCINSTALLDIR%\" 1>NUL 2>NUL
 if not exist "%VCINSTALLDIR%\nasm.exe" (
     echo Error: Failed to install NASM binary!
     echo    Ensure that this script is run in a shell with the necessary write privileges
-    rd /S /Q "./TempNASMUnpack" 1>NUL 2>NUL
+    rd /S /Q "%SCRIPTDIR%\TempNASMUnpack" 1>NUL 2>NUL
     goto Terminate
 )
-rd /S /Q "./TempNASMUnpack"
+rd /S /Q "%SCRIPTDIR%\TempNASMUnpack"
 echo Finished Successfully
 goto Exit
 

@@ -40,6 +40,7 @@
       </NASM_tlog>
     </ItemGroup>
     <Message
+      Condition="'@(NASM)' != '' and '%(NASM.ExcludedFromBuild)' != 'true'"
       Importance="High"
       Text="%(NASM.ExecutionDescription)" />
     <WriteLinesToFile
@@ -58,7 +59,7 @@
       TreatWarningsAsErrors="%(NASM.TreatWarningsAsErrors)"
       CommandLineTemplate="%(NASM.CommandLineTemplate)"
       AdditionalOptions="%(NASM.AdditionalOptions)"
- />
+    />
   </Target>
   <Target
     Name="ComputeNASMOutput"

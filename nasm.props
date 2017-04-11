@@ -12,7 +12,7 @@
     <NASM>
       <OutputFormat>$(IntDir)%(FileName).obj</OutputFormat>
       <CommandLineTemplate>"$(NasmPath)"nasm.exe -Xvc -f win$(PlatformArchitecture) [AllOptions] [AdditionalOptions] "%(FullPath)"</CommandLineTemplate>
-      <ExecutionDescription>Assembling %(Identity)...</ExecutionDescription>
+      <ExecutionDescription>%(Identity)</ExecutionDescription>
     </NASM>
   </ItemDefinitionGroup>
 </Project>
