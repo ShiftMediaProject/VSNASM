@@ -1,18 +1,23 @@
-# VSNASM
-
+VSNASM
+=============
+[![Github All Releases](https://img.shields.io/github/downloads/ShiftMediaProject/VSNASM/total.svg)](https://github.com/ShiftMediaProject/VSNASM/releases)
+[![GitHub release](https://img.shields.io/github/release/ShiftMediaProject/VSNASM.svg)](https://github.com/ShiftMediaProject/VSNASM/releases/latest)
+[![GitHub issues](https://img.shields.io/github/issues/ShiftMediaProject/VSNASM.svg)](https://github.com/ShiftMediaProject/VSNASM/issues)
+[![license](https://img.shields.io/github/license/ShiftMediaProject/VSNASM.svg)](https://github.com/ShiftMediaProject/VSNASM)
+[![donate](https://img.shields.io/badge/donate-link-brightgreen.svg)](https://shiftmediaproject.github.io/8-donate/)
 Provides Visual Studio integration for the NASM assembler.
 Supports Visual Studio 2010, 2012, 2013, 2015 and 2017.
 
-# About
+## About
 
 This project provides a set of build customisations that can be used within Visual Studio to compile assembly code using NASM.
 
-# NASM
+## NASM
 
 The Netwide Assembler (NASM) is an assembler and disassembler for the Intel x86 architecture. It can be used to write 16-bit, 32-bit (IA-32) and 64-bit (x86-64) programs.
 For more information on NASM refer to the official site: [www.nasm.us](www.nasm.us).
 
-# Installation
+## Installation
 
 The project provides a basic installer script that can automatically detect any installed Visual Studio 2013, 2015 or 2017 installation and then install the required components.
 To use this script simply run '**install_script.bat**' from an elevated command prompt.
