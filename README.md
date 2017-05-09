@@ -31,8 +31,8 @@ To tell Visual Studio where to find nasm.exe you have several options:
 This can be determined from within Visual Studio by checking the contents of the VCInstallDir macro.
 For example the location for Visual Studio 2015 would be:
 
-    1. C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin         -- For a 64 bit system
-    2. C:\Program Files\Microsoft Visual Studio 14.0\VC\bin               -- For a 32 bit system
+    1. C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC         -- For a 64 bit system
+    2. C:\Program Files\Microsoft Visual Studio 14.0\VC               -- For a 32 bit system
 
 2. You can install nasm to any directory and then set environment variable NASMPATH to point to the absolute directory of the installed nasm.exe (this path should include the final backslash).
 
