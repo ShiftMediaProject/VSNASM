@@ -49,44 +49,58 @@
       </StringProperty.DataSource>
     </StringProperty>
     <StringProperty
-	  Name="OutputFormat"
+	  Name="ObjectFileName"
       Category="Assembler Options"
-      HelpUrl="http://www.nasm.us/doc/"
       DisplayName="Output File Name"
       Description="Specify Output Filename."
+      HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.1"  
 	  Switch="-o &quot;[value]&quot;" />
 	<BoolProperty
 	  Name="GenerateDebugInformation"
 	  Category="Assembler Options"
 	  DisplayName="Generate Debug Information"
 	  Description="Generates Debug Information."
-	  HelpUrl="http://www.nasm.us/doc/"
+	  HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.12"
 	  Switch="-g" />
+    <StringProperty
+	  Name="SymbolsPrefix"
+	  Category="Assembler Options"
+	  DisplayName="Symbols Prefix"
+	  Description="Prepend the given argument to all global or extern variables."
+	  HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.27"
+	  Switch="--prefix [value]" />
+    <StringProperty
+	  Name="SymbolsPostfix"
+	  Category="Assembler Options"
+	  DisplayName="Symbols Postfix"
+	  Description="Append the given argument to all global or extern variables."
+	  HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.27"
+	  Switch="--postfix [value]" />
 	<StringListProperty
 	  Name="IncludePaths"
 	  Category="General"
 	  DisplayName="Include File Search Directories"
-	  Description="Sets path for include files."
-	  HelpUrl="http://www.nasm.us/doc/"
-	  Switch="-I&quot;[value]/&quot;" />
+	  Description="Sets path for include files. A maximum of 10 /I options is allowed.     (/I [path])"
+	  HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.16"
+	  Switch="-I&quot;[value]/&quot;" /> <!-- The backslash here is necessary!! --> 
 	<StringListProperty
 	  Name="PreIncludeFiles"
 	  Category="General"
 	  DisplayName="Pre-Include a File"
 	  Description="Force files to be pre-included into source file."
-	  HelpUrl="http://www.nasm.us/doc/"
+	  HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.17"
 	  Switch="-P&quot;[value]&quot;" />
 	<StringListProperty
 	  Name="PreprocessorDefinitions"
       Category="Preprocessor"
-      HelpUrl="http://www.nasm.us/doc/"
+      HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.18"
       DisplayName="Preprocessor Definitions"
       Description="Defines a text macro with the given name."
 	  Switch="-D[value]" />
     <StringListProperty
 	  Name="UndefinePreprocessorDefinitions"
 	  Category="Preprocessor"
-	  HelpUrl="http://www.nasm.us/doc/"
+	  HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.19"
 	  DisplayName="Undefine Preprocessor Definitions"
 	  Description="Undefines a text macro with the given name."
 	  Switch="-U[value]" />
@@ -95,7 +109,7 @@
 	  Category="Assembler Options"
 	  DisplayName="Treat Warnings As Errors"
 	  Description="Returns an error code if warnings are generated."
-	  HelpUrl="http://www.nasm.us/doc/"
+	  HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.24"
 	  Switch="-Werror" />
     <StringProperty
       Name="CommandLineTemplate"
@@ -175,6 +189,9 @@
     DisplayName="Netwide Assembler" />
   <FileExtension
     Name="*.asm"
+    ContentType="NASM" />
+  <FileExtension
+    Name="*.s"
     ContentType="NASM" />
   <ContentType
     Name="NASM"
