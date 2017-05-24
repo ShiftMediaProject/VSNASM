@@ -28,14 +28,14 @@
     BeforeTargets="$(NASMBeforeTargets)"
     AfterTargets="$(NASMAfterTargets)"
     Condition="'@(NASM)' != ''"
-    Outputs="%(NASM.OutputFormat)"
+    Outputs="%(NASM.ObjectFileName)"
     Inputs="%(NASM.Identity);%(NASM.AdditionalDependencies);$(MSBuildProjectFile)"
     DependsOnTargets="_SelectedFiles">
     <ItemGroup Condition="'@(SelectedFiles)' != ''">
       <NASM Remove="@(NASM)" Condition="'%(Identity)' != '@(SelectedFiles)'" />
     </ItemGroup>
     <ItemGroup>
-      <NASM_tlog Include="%(NASM.OutputFormat)" Condition="'%(NASM.OutputFormat)' != '' and '%(NASM.ExcludedFromBuild)' != 'true'">
+      <NASM_tlog Include="%(NASM.ObjectFileName)" Condition="'%(NASM.ObjectFileName)' != '' and '%(NASM.ExcludedFromBuild)' != 'true'">
         <Source>@(NASM, '|')</Source>
       </NASM_tlog>
     </ItemGroup>
@@ -50,7 +50,9 @@
     <NASM
       Condition="'@(NASM)' != '' and '%(NASM.ExcludedFromBuild)' != 'true'"
       Inputs="%(NASM.Inputs)"
-      OutputFormat="%(NASM.OutputFormat)"
+      ObjectFileName="%(NASM.ObjectFileName)"
+      SymbolsPrefix="%(NASM.SymbolsPrefix)"
+      SymbolsPostfix="%(NASM.SymbolsPostfix)"
       GenerateDebugInformation="%(NASM.GenerateDebugInformation)"
       IncludePaths="%(NASM.IncludePaths)"
       PreIncludeFiles="%(NASM.PreIncludeFiles)"
@@ -65,8 +67,8 @@
     Name="ComputeNASMOutput"
     Condition="'@(NASM)' != ''">
     <ItemGroup>
-      <Link Include="@(NASM->Metadata('OutputFormat')->Distinct()->ClearMetadata())" Condition="'%(NASM.ExcludedFromBuild)' != 'true'"/>
-      <Lib Include="@(NASM->Metadata('OutputFormat')->Distinct()->ClearMetadata())" Condition="'%(NASM.ExcludedFromBuild)' != 'true'"/>
+      <Link Include="@(NASM->Metadata('ObjectFileName')->Distinct()->ClearMetadata())" Condition="'%(NASM.ExcludedFromBuild)' != 'true'"/>
+      <Lib Include="@(NASM->Metadata('ObjectFileName')->Distinct()->ClearMetadata())" Condition="'%(NASM.ExcludedFromBuild)' != 'true'"/>
     </ItemGroup>
   </Target>
 </Project>
