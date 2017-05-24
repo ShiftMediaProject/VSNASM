@@ -10,9 +10,12 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <NASM>
-      <OutputFormat>$(IntDir)%(FileName).obj</OutputFormat>
-      <CommandLineTemplate>"$(NasmPath)"nasm.exe -Xvc -f win$(PlatformArchitecture) [AllOptions] [AdditionalOptions] "%(FullPath)"</CommandLineTemplate>
-      <ExecutionDescription>%(Identity)</ExecutionDescription>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ObjectFileName>$(IntDir)%(FileName).obj</ObjectFileName>
+      <CommandLineTemplate Condition="'$(Platform)' == 'Win32'">"$(NasmPath)"nasm.exe -Xvc -f win32 [AllOptions] [AdditionalOptions] "%(FullPath)"</CommandLineTemplate>
+      <CommandLineTemplate Condition="'$(Platform)' == 'X64'">"$(NasmPath)"nasm.exe -Xvc -f win64 [AllOptions] [AdditionalOptions] "%(FullPath)"</CommandLineTemplate>
+      <CommandLineTemplate Condition="'$(Platform)' != 'Win32' and '$(Platform)' != 'X64'">echo NASM not supported on this platform exit 1</CommandLineTemplate>
+      <ExecutionDescription>Assembling %(Identity)...</ExecutionDescription>
     </NASM>
   </ItemDefinitionGroup>
 </Project>
