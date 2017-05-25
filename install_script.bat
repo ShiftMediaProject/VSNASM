@@ -177,7 +177,6 @@ if exist "%VCINSTALLDIR%\nasm.exe" (
 set INSTALLED=1
 if exist "%SCRIPTDIR%\TempNASMUnpack\nasm-%NASMVERSION%\nasm.exe" set INSTALLED=0
 
-
 if not exist "%VCINSTALLDIR%\nasm.exe" set INSTALLED=0
 if %INSTALLED% equ 0 (
     echo Error: Failed to install NASM binary!
