@@ -3,9 +3,9 @@
   <ItemGroup>
     <PropertyPageSchema
       Include="$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml" />
-      <AvailableItemName Include="NASM">
-        <Targets>_NASM</Targets>
-      </AvailableItemName>
+    <AvailableItemName Include="NASM">
+      <Targets>_NASM</Targets>
+    </AvailableItemName>
   </ItemGroup>
   <PropertyGroup>
     <ComputeLinkInputsTargets>
