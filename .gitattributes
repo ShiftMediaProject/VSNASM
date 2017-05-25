@@ -1,5 +1,1 @@
 * text=auto
-*.bat text eol=crlf
-*.props text eol=crlf
-*.targets text eol=crlf
-*.xml text eol=crlf
