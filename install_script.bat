@@ -167,9 +167,16 @@ del /F /Q "%SCRIPTDIR%\nasm.zip" >nul 2>&1
 REM copy nasm executable to VC installation folder
 echo Installing required NASM release binary...
 del /F /Q "%VCINSTALLDIR%\nasm.exe" >nul 2>&1
-move /B /Y /V "%SCRIPTDIR%\TempNASMUnpack\nasm-%NASMVERSION%\nasm.exe" "%VCINSTALLDIR%\" >nul 2>&1
+
+copy /Y "%SCRIPTDIR%\TempNASMUnpack\nasm-%NASMVERSION%\nasm.exe" "%VCINSTALLDIR%\" >nul 2>&1
+
+if exist "%VCINSTALLDIR%\nasm.exe" ( 
+    del /F /Q "%SCRIPTDIR%\TempNASMUnpack\nasm-%NASMVERSION%\nasm.exe"
+)
+
 set INSTALLED=1
 if exist "%SCRIPTDIR%\TempNASMUnpack\nasm-%NASMVERSION%\nasm.exe" set INSTALLED=0
+
 if not exist "%VCINSTALLDIR%\nasm.exe" set INSTALLED=0
 if %INSTALLED% equ 0 (
     echo Error: Failed to install NASM binary!
