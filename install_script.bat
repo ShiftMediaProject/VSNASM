@@ -141,7 +141,7 @@ REM copy the BuildCustomizations to VCTargets folder
 echo Installing build customisations...
 del /F /Q "%VCTargetsPath%\BuildCustomizations\nasm.*" >nul 2>&1
 copy /B /Y /V "%SCRIPTDIR%\nasm.*" "%VCTargetsPath%\BuildCustomizations\" >nul 2>&1
-if not exist "%VCTargetsPath%\BuildCustomizations\nasm.props" (
+if %ERRORLEVEL% neq 0 (
     echo Error: Failed to copy build customisations!
     echo    Ensure that this script is run in a shell with the necessary write privileges
     goto Terminate
@@ -167,17 +167,14 @@ del /F /Q "%SCRIPTDIR%\nasm.zip" >nul 2>&1
 REM copy nasm executable to VC installation folder
 echo Installing required NASM release binary...
 del /F /Q "%VCINSTALLDIR%\nasm.exe" >nul 2>&1
-move /B /Y /V "%SCRIPTDIR%\TempNASMUnpack\nasm-%NASMVERSION%\nasm.exe" "%VCINSTALLDIR%\" >nul 2>&1
-set INSTALLED=1
-if exist "%SCRIPTDIR%\TempNASMUnpack\nasm-%NASMVERSION%\nasm.exe" set INSTALLED=0
-if not exist "%VCINSTALLDIR%\nasm.exe" set INSTALLED=0
-if %INSTALLED% equ 0 (
+copy /B /Y /V "%SCRIPTDIR%\TempNASMUnpack\nasm-%NASMVERSION%\nasm.exe" "%VCINSTALLDIR%" >nul 2>&1
+if %ERRORLEVEL% neq 0 (
     echo Error: Failed to install NASM binary!
     echo    Ensure that this script is run in a shell with the necessary write privileges
     rd /S /Q "%SCRIPTDIR%\TempNASMUnpack" >nul 2>&1
     goto Terminate
 )
-rd /S /Q "%SCRIPTDIR%\TempNASMUnpack"
+rd /S /Q "%SCRIPTDIR%\TempNASMUnpack" >nul 2>&1
 echo Finished Successfully
 goto Exit
 
