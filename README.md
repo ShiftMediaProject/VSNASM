@@ -41,17 +41,17 @@ There are several ways to do this:
 
 1. Copy these files to the MSBuild customisations directory.
 This can be determined from within Visual Studio by checking the contents of the VCTargetsPath macro.
-For example the location for various Visual Studio version ona 64 bit system would be:
+For example the location for various Visual Studio versions on a 64 bit system would be:
 
     1. Visual Studio 2013: C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\BuildCustomizations
     2. Visual Studio 2015: C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\BuildCustomizations
     3. Visual Studio 2017: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\BuildCustomizations
 
-2. Copy these files to convenient location and set that path in the 'Build Customisations Search Path' in the Visual Studio 'Projects and Solutions|VC++ Project Settings' item in the 'Tools|Options' menu.
+2. Copy these files to a convenient location and set that path in the 'Build Customisations Search Path' in the Visual Studio 'Projects and Solutions|VC++ Project Settings' item in the 'Tools|Options' menu.
 
-3. Copy these files to convenient location and set this path in the 'Build Customisation dialogue (discussed later).
+3. Copy these files to a convenient location and set this path in the 'Build Customisation dialogue (discussed later).
 
-To use NASM in a project you must enable the customisation by right click on the project in the Solution Explorer and select 'Build Customisations..'. This will give you a dialog box that allows you to select NASM as an assembler (note that your assembler files need to have the extension '.asm').  If you have used option **3** above, you will need to let the dialogue find them using the 'Find Existing' button below the dialogue.
+To use NASM in a project you must enable the customisation by right clicking on the project in the Solution Explorer and select 'Build Customisations..'. This will give you a dialog box that allows you to select NASM as an assembler (note that your assembly files need to have the extension '.asm').  If you have used option **3** above, you will need to let the dialogue find them using the 'Find Existing' button below the dialogue.
 
 To assemble a file with NASM, select the Property Page for the file and ensure that 'Nasm Assembler' is selected in the Tool dialog entry.
-The additional NASM property page can then be used to change various options supported by NASM..
+The additional NASM property page can then be used to change various options supported by NASM.
