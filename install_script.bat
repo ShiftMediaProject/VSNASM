@@ -93,12 +93,12 @@ if not ERRORLEVEL 1 (
     set MSVC_VER=14
     goto MSVCVarsDone
 )
-reg.exe query "HKLM\Software%WOWNODE%\Microsoft\VisualStudio\13.0" /v "InstallDir" >nul 2>&1
+reg.exe query "HKLM\Software%WOWNODE%\Microsoft\VisualStudio\12.0" /v "InstallDir" >nul 2>&1
 if not ERRORLEVEL 1 (
     echo Visual Studio 2013 installation detected...
-    for /f "skip=2 tokens=2,*" %%a in ('reg.exe query "HKLM\Software%WOWNODE%\Microsoft\VisualStudio\13.0" /v "InstallDir"') do (set VSINSTALLDIR=%%b)
+    for /f "skip=2 tokens=2,*" %%a in ('reg.exe query "HKLM\Software%WOWNODE%\Microsoft\VisualStudio\12.0" /v "InstallDir"') do (set VSINSTALLDIR=%%b)
     call "!VSINSTALLDIR!\VC\bin%MSVCVARSDIR%\vcvars%SYSARCH%.bat" >nul 2>&1
-    set MSVC_VER=13
+    set MSVC_VER=12
     goto MSVCVarsDone
 )
 echo Error: Could not find valid Visual Studio installation!
