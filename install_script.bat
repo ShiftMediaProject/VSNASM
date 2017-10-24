@@ -106,15 +106,15 @@ goto Terminate
 
 :MSVCVarsDone
 REM Get the location of the current msbuild
-powershell.exe -Command ((Get-Command msbuild.exe)[0].Path ^| Split-Path -parent) > msbuild.txt
-findstr /C:"Get-Command" msbuild.txt >nul 2>&1
+powershell.exe -Command ((Get-Command msbuild.exe)[0].Path ^| Split-Path -parent) > "%SCRIPTDIR%\msbuild.txt"
+findstr /C:"Get-Command" "%SCRIPTDIR%\msbuild.txt" >nul 2>&1
 if not ERRORLEVEL 1 (
     echo Error: Failed to get location of msbuild!
-    del /F /Q msbuild.txt >nul 2>&1
+    del /F /Q "%SCRIPTDIR%\msbuild.txt" >nul 2>&1
     goto Terminate
 )
-set /p MSBUILDDIR=<msbuild.txt
-del /F /Q msbuild.txt >nul 2>&1
+set /p MSBUILDDIR=<"%SCRIPTDIR%\msbuild.txt"
+del /F /Q "%SCRIPTDIR%\msbuild.txt" >nul 2>&1
 if "%MSVC_VER%"=="15" (
     set VCTargetsPath="..\..\..\Common7\IDE\VC\VCTargets"
 ) else (
