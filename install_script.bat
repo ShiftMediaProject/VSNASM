@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 REM Defined cript variables
 set NASMDL=http://www.nasm.us/pub/nasm/releasebuilds
-set NASMVERSION=2.13.02
+set NASMVERSION=2.13.03
 
 REM Store current directory and ensure working directory is the location of current .bat
 set CALLDIR=%CD%
