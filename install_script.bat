@@ -220,23 +220,27 @@ if %ERRORLEVEL% neq 0 (
     echo    Ensure that this script is run in a shell with the necessary write privileges
     goto Terminate
 )
-
 REM Download the latest nasm binary for windows
+if exist "%SCRIPTDIR%\nasm_%NASMVERSION%.zip" (
+    echo Using existing NASM binary...
+    goto InstallNASM
+)
 set NASMDOWNLOAD=%NASMDL%/%NASMVERSION%/win%SYSARCH%/nasm-%NASMVERSION%-win%SYSARCH%.zip
 echo Downloading required NASM release binary...
-powershell.exe -Command (New-Object Net.WebClient).DownloadFile('%NASMDOWNLOAD%', '%SCRIPTDIR%\nasm.zip') >nul 2>&1
-if not exist "%SCRIPTDIR%\nasm.zip" (
+powershell.exe -Command (New-Object Net.WebClient).DownloadFile('%NASMDOWNLOAD%', '%SCRIPTDIR%\nasm_%NASMVERSION%.zip') >nul 2>&1
+if not exist "%SCRIPTDIR%\nasm_%NASMVERSION%.zip" (
     echo Error: Failed to download required NASM binary!
     echo    The following link could not be resolved "%NASMDOWNLOAD%"
     goto Terminate
 )
-powershell.exe -Command Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('"%SCRIPTDIR%\nasm.zip"', '"%SCRIPTDIR%\TempNASMUnpack"') >nul 2>&1
+
+:InstallNASM
+powershell.exe -Command Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('"%SCRIPTDIR%\nasm_%NASMVERSION%.zip"', '"%SCRIPTDIR%\TempNASMUnpack"') >nul 2>&1
 if not exist "%SCRIPTDIR%\TempNASMUnpack" (
     echo Error: Failed to unpack NASM download!
-    del /F /Q "%SCRIPTDIR%\nasm.zip" >nul 2>&1
+    del /F /Q "%SCRIPTDIR%\nasm_.zip" >nul 2>&1
     goto Terminate
 )
-del /F /Q "%SCRIPTDIR%\nasm.zip" >nul 2>&1
 
 REM copy nasm executable to VC installation folder
 echo Installing required NASM release binary...
