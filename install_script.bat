@@ -1,5 +1,5 @@
 @echo OFF
-setlocal enabledelayedexpansion
+setlocal
 
 REM Defined cript variables
 set NASMDL=http://www.nasm.us/pub/nasm/releasebuilds
@@ -12,7 +12,14 @@ set CALLDIR=%CD%
 set SCRIPTDIR=%~dp0
 
 REM Initialise error check value
-SET ERROR=0
+set ERROR=0
+REM Check if being called from another instance
+if not "%~1"=="" (
+    set MSVC_VER=%~1
+    set VSINSTANCEDIR=%2
+    set ISINSTANCE=1
+    goto MSVCCALL
+)
 
 REM Check what architecture we are installing on
 if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
@@ -71,74 +78,63 @@ if not exist "%SCRIPTDIR%\vswhere.exe" (
 :VSwhereDetection
 REM Use vswhere to list detected installs
 for /f "usebackq tokens=1* delims=: " %%i in (`vswhere -prerelease -requires Microsoft.Component.MSBuild`) do (
-    if /i "%%i"=="installationPath" set VSINSTALLDIR=%%j
-)
-if not "!VSINSTALLDIR!"=="" (
-    for /f "delims=" %%a in ('echo !VSINSTALLDIR! ^| find "2019"') do ( set VCVER=%%a )
-    if not "!VCVER!"=="" (
-        echo Visual Studio 2019 environment detected...
-        set MSVC_VER=16
+    if /i "%%i"=="installationPath" (
+        for /f "delims=" %%a in ('echo %%j ^| find "2019"') do (
+            if not "%%a"=="" (
+                echo Visual Studio 2019 environment detected...
+                call "%~0" "16" "%%j"
+                if not ERRORLEVEL 1 (
+                    set MSVC16=1
+                    set MSVCFOUND=1
+                )
+            )
+        )
+        for /f "delims=" %%a in ('echo %%j ^| find "2017"') do (
+            if not "%%a"=="" (
+                echo Visual Studio 2017 environment detected...
+                call "%~0" "15" "%%j"
+                if not ERRORLEVEL 1 (
+                    set MSVC15=1
+                    set MSVCFOUND=1
+                )
+            )
+        )
     )
-    set VCVER=
-    for /f "delims=" %%a in ('echo !VSINSTALLDIR! ^| find "2017"') do ( set VCVER=%%a )
-    if not "!VCVER!"=="" (
-        echo Visual Studio 2017 environment detected...
-        set MSVC_VER=15
-    )
-    call "!VSINSTALLDIR!\VC\Auxiliary\Build\vcvars%SYSARCH%.bat" >nul 2>&1
-    goto MSVCVarsDone
 )
 
 REM Try and use vswhere to detect legacy installs
-if "%SYSARCH%"=="32" (
-    set MSVCVARSDIR=
-) else if "%SYSARCH%"=="64" (
-    set MSVCVARSDIR=\amd64
-) else (
-    goto Terminate
-)
 for /f "usebackq tokens=1* delims=: " %%i in (`vswhere -legacy`) do (
-    if /i "%%i"=="installationPath" set VSINSTALLDIR=%%j
+    if /i "%%i"=="installationPath" (
+        for /f "delims=" %%a in ('echo %%j ^| find "2015"') do (
+            if not "%%a"=="" (
+                echo Visual Studio 2015 environment detected...
+                call "%~0" "13" "%%j"
+                if not ERRORLEVEL 1 (
+                    set MSVC13=1
+                    set MSVCFOUND=1
+                )
+            )
+        )
+        for /f "delims=" %%a in ('echo %%j ^| find "2013"') do (
+            if not "%%a"=="" (
+                echo Visual Studio 2013 environment detected...
+                call "%~0" "12" "%%j"
+                if not ERRORLEVEL 1 (
+                    set MSVC12=1
+                    set MSVCFOUND=1
+                )
+            )
+        )
+    )
 )
-if not "!VSINSTALLDIR!"=="" (
-    for /f "delims=" %%a in ('echo !VSINSTALLDIR! ^| find "2015"') do ( set VCVER=%%a )
-    if not "!VCVER!"=="" (
-        echo Visual Studio 2015 environment detected...
-        set MSVC_VER=13
-    )
-    set VCVER=
-    for /f "delims=" %%a in ('echo !VSINSTALLDIR! ^| find "2013"') do ( set VCVER=%%a )
-    if not "!VCVER!"=="" (
-        echo Visual Studio 2013 environment detected...
-        set MSVC_VER=12
-    )
-    call "!VSINSTALLDIR!\VC\bin%MSVCVARSDIR%\vcvars%SYSARCH%.bat" >nul 2>&1
-    goto MSVCVarsDone
-) else (
+if not defined MSVCFOUND (
     echo Error: Failed to detect VS installations using vswhere!
-    echo    Now trying fallback detection..."
+    echo    Now trying fallback detection...
+) else (
+    goto Exit
 )
 
 :MSVCRegDetection
-REM First check for a environment variable to help locate the VS installation
-if defined VS140COMNTOOLS (
-    if exist "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" (
-        echo Visual Studio 2015 environment detected...
-        call "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" >nul 2>&1
-        set MSVC_VER=14
-        goto MSVCVarsDone
-    )
-)
-if defined VS120COMNTOOLS (
-    if exist "%VS120COMNTOOLS%\..\..\VC\vcvarsall.bat" (
-        echo Visual Studio 2013 environment detected...
-        call "%VS120COMNTOOLS%\..\..\VC\vcvarsall.bat" >nul 2>&1
-        set MSVC_VER=12
-        goto MSVCVarsDone
-    )
-)
-
-REM Check for default install locations based on current system architecture
 if "%SYSARCH%"=="32" (
     set MSVCVARSDIR=
     set WOWNODE=
@@ -148,33 +144,101 @@ if "%SYSARCH%"=="32" (
 ) else (
     goto Terminate
 )
+REM First check for a environment variable to help locate the VS installation
+if defined VS140COMNTOOLS (
+    if exist "%VS140COMNTOOLS%\..\..\VC\bin%MSVCVARSDIR%\vcvars%SYSARCH%.bat" (
+        echo Visual Studio 2015 environment detected...
+        call "%~0" "14" "%VS140COMNTOOLS%\..\..\"
+        if not ERRORLEVEL 1 (
+            set MSVC14=1
+            set MSVCFOUND=1
+        )
+    )
+)
+if defined VS120COMNTOOLS (
+    if exist "%VS120COMNTOOLS%\..\..\VC\bin%MSVCVARSDIR%\vcvars%SYSARCH%.bat" (
+        echo Visual Studio 2013 environment detected...
+        call "%~0" "12" "%VS120COMNTOOLS%\..\..\"
+        if not ERRORLEVEL 1 (
+            set MSVC12=1
+            set MSVCFOUND=1
+        )
+    )
+)
 
-reg.exe query "HKLM\SOFTWARE%WOWNODE%\Microsoft\VisualStudio\SxS\VS7" /v 15.0 >nul 2>&1
-if not ERRORLEVEL 1 (
-    echo Visual Studio 2017 installation detected...
-    for /f "skip=2 tokens=2,*" %%a in ('reg.exe query "HKLM\SOFTWARE%WOWNODE%\Microsoft\VisualStudio\SxS\VS7" /v 15.0') do (set VSINSTALLDIR=%%b)
-    call "!VSINSTALLDIR!VC\Auxiliary\Build\vcvars%SYSARCH%.bat" >nul 2>&1
-    set MSVC_VER=15
-    goto MSVCVarsDone
+REM Check for default install locations based on current system architecture
+if not defined MSVC15 (
+    reg.exe query "HKLM\SOFTWARE%WOWNODE%\Microsoft\VisualStudio\SxS\VS7" /v 15.0 >nul 2>&1
+    if not ERRORLEVEL 1 (
+        echo Visual Studio 2017 installation detected...
+        for /f "skip=2 tokens=2,*" %%i in ('reg.exe query "HKLM\SOFTWARE%WOWNODE%\Microsoft\VisualStudio\SxS\VS7" /v 15.0') do (
+            call "%~0" "15" "%%j"
+            if not ERRORLEVEL 1 (
+                set MSVC15=1
+                set MSVCFOUND=1
+            )
+        )
+    )
 )
-reg.exe query "HKLM\Software%WOWNODE%\Microsoft\VisualStudio\14.0" /v "InstallDir" >nul 2>&1
-if not ERRORLEVEL 1 (
-    echo Visual Studio 2015 installation detected...
-    for /f "skip=2 tokens=2,*" %%a in ('reg.exe query "HKLM\Software%WOWNODE%\Microsoft\VisualStudio\14.0" /v "InstallDir"') do (set VSINSTALLDIR=%%b)
-    call "!VSINSTALLDIR!\VC\bin%MSVCVARSDIR%\vcvars%SYSARCH%.bat" >nul 2>&1
-    set MSVC_VER=14
-    goto MSVCVarsDone
+if not defined MSVC14 (
+    reg.exe query "HKLM\Software%WOWNODE%\Microsoft\VisualStudio\14.0" /v "InstallDir" >nul 2>&1
+    if not ERRORLEVEL 1 (
+        echo Visual Studio 2015 installation detected...
+        for /f "skip=2 tokens=2,*" %%i in ('reg.exe query "HKLM\Software%WOWNODE%\Microsoft\VisualStudio\14.0" /v "InstallDir"') do (
+            call "%~0" "14" "%%j"
+            if not ERRORLEVEL 1 (
+                set MSVC14=1
+                set MSVCFOUND=1
+            )
+        )
+    )
 )
-reg.exe query "HKLM\Software%WOWNODE%\Microsoft\VisualStudio\12.0" /v "InstallDir" >nul 2>&1
-if not ERRORLEVEL 1 (
-    echo Visual Studio 2013 installation detected...
-    for /f "skip=2 tokens=2,*" %%a in ('reg.exe query "HKLM\Software%WOWNODE%\Microsoft\VisualStudio\12.0" /v "InstallDir"') do (set VSINSTALLDIR=%%b)
-    call "!VSINSTALLDIR!\VC\bin%MSVCVARSDIR%\vcvars%SYSARCH%.bat" >nul 2>&1
-    set MSVC_VER=12
-    goto MSVCVarsDone
+if not defined MSVC12 (
+    reg.exe query "HKLM\Software%WOWNODE%\Microsoft\VisualStudio\12.0" /v "InstallDir" >nul 2>&1
+    if not ERRORLEVEL 1 (
+        echo Visual Studio 2013 installation detected...
+        for /f "skip=2 tokens=2,*" %%i in ('reg.exe query "HKLM\Software%WOWNODE%\Microsoft\VisualStudio\12.0" /v "InstallDir"') do (
+            call "%~0" "12" "%%j"
+            if not ERRORLEVEL 1 (
+                set MSVC12=1
+                set MSVCFOUND=1
+            )
+        )
+    )
 )
-echo Error: Could not find valid Visual Studio installation!
-goto Terminate
+if not defined MSVCFOUND (
+    echo Error: Could not find valid Visual Studio installation!
+    goto Terminate
+)
+goto Exit
+
+:MSVCCALL
+if "%SYSARCH%"=="32" (
+    set MSVCVARSDIR=
+) else if "%SYSARCH%"=="64" (
+    set MSVCVARSDIR=\amd64
+) else (
+    goto Terminate
+)
+REM Call the required vcvars file in order to setup up build locations
+if "%MSVC_VER%"=="16" (
+    set VCVARS=%VSINSTANCEDIR%\VC\Auxiliary\Build\vcvars%SYSARCH%.bat
+) else if "%MSVC_VER%"=="15" (
+    set VCVARS=%VSINSTANCEDIR%\VC\Auxiliary\Build\vcvars%SYSARCH%.bat
+) else if "%MSVC_VER%"=="14" (
+    set VCVARS=%VSINSTANCEDIR%\VC\bin%MSVCVARSDIR%\vcvars%SYSARCH%.bat
+) else if "%MSVC_VER%"=="12" (
+    set VCVARS=%VSINSTANCEDIR%\VC\bin%MSVCVARSDIR%\vcvars%SYSARCH%.bat
+) else (
+    echo Error: Invalid MSVC version!
+    goto Terminate
+)
+if exist %VCVARS% (
+    call %VCVARS% >nul 2>&1
+) else (
+    echo Error: Invalid VS install location detected!
+    goto Terminate
+)
 
 :MSVCVarsDone
 REM Get the location of the current msbuild
@@ -188,14 +252,14 @@ if not ERRORLEVEL 1 (
 set /p MSBUILDDIR=<"%SCRIPTDIR%\msbuild.txt"
 del /F /Q "%SCRIPTDIR%\msbuild.txt" >nul 2>&1
 if "%MSVC_VER%"=="16" (
-    set VCTargetsPath="..\..\..\Common7\IDE\VC\VCTargets"
+    set VCTargetsPath="..\..\Microsoft\VC\v160\BuildCustomizations"
 ) else if "%MSVC_VER%"=="15" (
-    set VCTargetsPath="..\..\..\Common7\IDE\VC\VCTargets"
+    set VCTargetsPath="..\..\..\Common7\IDE\VC\VCTargets\BuildCustomizations"
 ) else (
     if "%MSBUILDDIR%"=="%MSBUILDDIR:amd64=%" (
-        set VCTargetsPath="..\..\Microsoft.Cpp\v4.0\V%MSVC_VER%0"
+        set VCTargetsPath="..\..\Microsoft.Cpp\v4.0\V%MSVC_VER%0\BuildCustomizations"
     ) else (
-        set VCTargetsPath="..\..\..\Microsoft.Cpp\v4.0\V%MSVC_VER%0"
+        set VCTargetsPath="..\..\..\Microsoft.Cpp\v4.0\V%MSVC_VER%0\BuildCustomizations"
     )
 )
 
@@ -213,8 +277,8 @@ if not "%CURRDIR%"=="%CD%" (
 
 REM copy the BuildCustomizations to VCTargets folder
 echo Installing build customisations...
-del /F /Q "%VCTargetsPath%\BuildCustomizations\nasm.*" >nul 2>&1
-copy /B /Y /V "%SCRIPTDIR%\nasm.*" "%VCTargetsPath%\BuildCustomizations\" >nul 2>&1
+del /F /Q "%VCTargetsPath%\nasm.*" >nul 2>&1
+copy /B /Y /V "%SCRIPTDIR%\nasm.*" "%VCTargetsPath%\" >nul 2>&1
 if %ERRORLEVEL% neq 0 (
     echo Error: Failed to copy build customisations!
     echo    Ensure that this script is run in a shell with the necessary write privileges
@@ -257,11 +321,13 @@ echo Finished Successfully
 goto Exit
 
 :Terminate
-SET ERROR=1
+set ERROR=1
 
 :Exit
 cd %CALLDIR%
-IF "%APPVEYOR%"=="" (
-    pause
+if "%APPVEYOR%"=="" (
+    if not defined ISINSTANCE (
+        pause
+    )
 )
-exit /b %ERROR%
+endlocal & exit /b %ERROR%
