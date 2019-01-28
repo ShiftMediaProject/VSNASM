@@ -77,7 +77,7 @@ if not exist "%SCRIPTDIR%\vswhere.exe" (
 
 :VSwhereDetection
 REM Use vswhere to list detected installs
-for /f "usebackq tokens=1* delims=: " %%i in (`vswhere -prerelease -requires Microsoft.Component.MSBuild`) do (
+for /f "usebackq tokens=1* delims=: " %%i in (`"%SCRIPTDIR%\vswhere.exe" -prerelease -requires Microsoft.Component.MSBuild`) do (
     if /i "%%i"=="installationPath" (
         for /f "delims=" %%a in ('echo %%j ^| find "2019"') do (
             if not "%%a"=="" (
@@ -103,7 +103,7 @@ for /f "usebackq tokens=1* delims=: " %%i in (`vswhere -prerelease -requires Mic
 )
 
 REM Try and use vswhere to detect legacy installs
-for /f "usebackq tokens=1* delims=: " %%i in (`vswhere -legacy`) do (
+for /f "usebackq tokens=1* delims=: " %%i in (`"%SCRIPTDIR%\vswhere.exe" -legacy`) do (
     if /i "%%i"=="installationPath" (
         for /f "delims=" %%a in ('echo %%j ^| find "2015"') do (
             if not "%%a"=="" (
