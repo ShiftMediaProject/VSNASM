@@ -3,7 +3,9 @@ setlocal enabledelayedexpansion
 
 REM Defined cript variables
 set NASMDL=http://www.nasm.us/pub/nasm/releasebuilds
-set NASMVERSION=2.13.03
+set NASMVERSION=2.14.02
+set VSWHEREDL=https://github.com/Microsoft/vswhere/releases/download
+set VSWHEREVERSION=2.5.9
 
 REM Store current directory and ensure working directory is the location of current .bat
 set CALLDIR=%CD%
@@ -33,7 +35,10 @@ REM Check if already running in an environment with VS setup
 if defined VCINSTALLDIR (
     if defined VisualStudioVersion (
         echo Existing Visual Studio environment detected...
-        if "%VisualStudioVersion%"=="15.0" (
+        if "%VisualStudioVersion%"=="16.0" (
+            set MSVC_VER=16
+            goto MSVCVarsDone
+        ) else if "%VisualStudioVersion%"=="15.0" (
             set MSVC_VER=15
             goto MSVCVarsDone
         ) else if "%VisualStudioVersion%"=="14.0" (
@@ -48,6 +53,73 @@ if defined VCINSTALLDIR (
     )
 )
 
+REM Get vswhere to detect VS installs
+if exist "%SCRIPTDIR%\vswhere.exe" (
+    echo Using existing vswhere binary...
+    goto VSwhereDetection
+)
+set VSWHEREDOWNLOAD=%VSWHEREDL%/%VSWHEREVERSION%/vswhere.exe
+echo Downloading required vswhere release binary...
+powershell.exe -Command (New-Object Net.WebClient).DownloadFile('%VSWHEREDOWNLOAD%', '%SCRIPTDIR%\vswhere.exe') >nul 2>&1
+if not exist "%SCRIPTDIR%\vswhere.exe" (
+    echo Error: Failed to download required vswhere binary!
+    echo    The following link could not be resolved "%VSWHEREDOWNLOAD%"
+    echo    Now trying fallback detection..."
+    goto MSVCRegDetection
+)
+
+:VSwhereDetection
+REM Use vswhere to list detected installs
+for /f "usebackq tokens=1* delims=: " %%i in (`vswhere -prerelease -requires Microsoft.Component.MSBuild`) do (
+    if /i "%%i"=="installationPath" set VSINSTALLDIR=%%j
+)
+if not "!VSINSTALLDIR!"=="" (
+    for /f "delims=" %%a in ('echo !VSINSTALLDIR! ^| find "2019"') do ( set VCVER=%%a )
+    if not "!VCVER!"=="" (
+        echo Visual Studio 2019 environment detected...
+        set MSVC_VER=16
+    )
+    set VCVER=
+    for /f "delims=" %%a in ('echo !VSINSTALLDIR! ^| find "2017"') do ( set VCVER=%%a )
+    if not "!VCVER!"=="" (
+        echo Visual Studio 2017 environment detected...
+        set MSVC_VER=15
+    )
+    call "!VSINSTALLDIR!\VC\Auxiliary\Build\vcvars%SYSARCH%.bat" >nul 2>&1
+    goto MSVCVarsDone
+)
+
+REM Try and use vswhere to detect legacy installs
+if "%SYSARCH%"=="32" (
+    set MSVCVARSDIR=
+) else if "%SYSARCH%"=="64" (
+    set MSVCVARSDIR=\amd64
+) else (
+    goto Terminate
+)
+for /f "usebackq tokens=1* delims=: " %%i in (`vswhere -legacy`) do (
+    if /i "%%i"=="installationPath" set VSINSTALLDIR=%%j
+)
+if not "!VSINSTALLDIR!"=="" (
+    for /f "delims=" %%a in ('echo !VSINSTALLDIR! ^| find "2015"') do ( set VCVER=%%a )
+    if not "!VCVER!"=="" (
+        echo Visual Studio 2015 environment detected...
+        set MSVC_VER=13
+    )
+    set VCVER=
+    for /f "delims=" %%a in ('echo !VSINSTALLDIR! ^| find "2013"') do ( set VCVER=%%a )
+    if not "!VCVER!"=="" (
+        echo Visual Studio 2013 environment detected...
+        set MSVC_VER=12
+    )
+    call "!VSINSTALLDIR!\VC\bin%MSVCVARSDIR%\vcvars%SYSARCH%.bat" >nul 2>&1
+    goto MSVCVarsDone
+) else (
+    echo Error: Failed to detect VS installations using vswhere!
+    echo    Now trying fallback detection..."
+)
+
+:MSVCRegDetection
 REM First check for a environment variable to help locate the VS installation
 if defined VS140COMNTOOLS (
     if exist "%VS140COMNTOOLS%\..\..\VC\vcvarsall.bat" (
@@ -115,7 +187,9 @@ if not ERRORLEVEL 1 (
 )
 set /p MSBUILDDIR=<"%SCRIPTDIR%\msbuild.txt"
 del /F /Q "%SCRIPTDIR%\msbuild.txt" >nul 2>&1
-if "%MSVC_VER%"=="15" (
+if "%MSVC_VER%"=="16" (
+    set VCTargetsPath="..\..\..\Common7\IDE\VC\VCTargets"
+) else if "%MSVC_VER%"=="15" (
     set VCTargetsPath="..\..\..\Common7\IDE\VC\VCTargets"
 ) else (
     if "%MSBUILDDIR%"=="%MSBUILDDIR:amd64=%" (
