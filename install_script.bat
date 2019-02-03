@@ -5,7 +5,7 @@ REM Defined cript variables
 set NASMDL=http://www.nasm.us/pub/nasm/releasebuilds
 set NASMVERSION=2.14.02
 set VSWHEREDL=https://github.com/Microsoft/vswhere/releases/download
-set VSWHEREVERSION=2.5.9
+set VSWHEREVERSION=2.6.7
 
 REM Store current directory and ensure working directory is the location of current .bat
 set CALLDIR=%CD%
