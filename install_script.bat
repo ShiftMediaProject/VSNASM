@@ -77,26 +77,24 @@ if not exist "%SCRIPTDIR%\vswhere.exe" (
 
 :VSwhereDetection
 REM Use vswhere to list detected installs
-for /f "usebackq tokens=1* delims=: " %%i in (`"%SCRIPTDIR%\vswhere.exe" -prerelease -requires Microsoft.Component.MSBuild`) do (
-    if /i "%%i"=="installationPath" (
-        for /f "delims=" %%a in ('echo %%j ^| find "2019"') do (
-            if not "%%a"=="" (
-                echo Visual Studio 2019 environment detected...
-                call "%~0" "16" "%%j"
-                if not ERRORLEVEL 1 (
-                    set MSVC16=1
-                    set MSVCFOUND=1
-                )
+for /f "usebackq tokens=1* delims=: " %%i in (`"%SCRIPTDIR%\vswhere.exe" -prerelease -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (
+    for /f "delims=" %%a in ('echo %%j ^| find "2019"') do (
+        if not "%%a"=="" (
+            echo Visual Studio 2019 environment detected...
+            call "%~0" "16" "%%j"
+            if not ERRORLEVEL 1 (
+                set MSVC16=1
+                set MSVCFOUND=1
             )
         )
-        for /f "delims=" %%a in ('echo %%j ^| find "2017"') do (
-            if not "%%a"=="" (
-                echo Visual Studio 2017 environment detected...
-                call "%~0" "15" "%%j"
-                if not ERRORLEVEL 1 (
-                    set MSVC15=1
-                    set MSVCFOUND=1
-                )
+    )
+    for /f "delims=" %%a in ('echo %%j ^| find "2017"') do (
+        if not "%%a"=="" (
+            echo Visual Studio 2017 environment detected...
+            call "%~0" "15" "%%j"
+            if not ERRORLEVEL 1 (
+                set MSVC15=1
+                set MSVCFOUND=1
             )
         )
     )
