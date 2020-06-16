@@ -20,7 +20,9 @@ For more information on NASM refer to the official site: [www.nasm.us](www.nasm.
 ## Installation
 
 The project provides a basic installer script that can automatically detect any installed Visual Studio 2013, 2015, 2017 or 2019 installation and then install the required components.
-To use this script simply run '**install_script.bat**' from an elevated command prompt.
+To use this script simply run '**install_script.bat**' from an elevated (i.e administrator) command prompt.
+
+## Manual Installation (optional)
 
 Alternatively, to manually install the extension you will first need to download the required win32 or win64 binary (depending on your system) from the official NASM website [www.nasm.us](www.nasm.us).
 
@@ -31,8 +33,8 @@ To tell Visual Studio where to find nasm.exe you have several options:
 This can be determined from within Visual Studio by checking the contents of the VCInstallDir macro.
 For example the location for Visual Studio 2015 would be:
 
-    1. C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC         -- For a 64 bit system
-    2. C:\Program Files\Microsoft Visual Studio 14.0\VC               -- For a 32 bit system
+    1. C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\         -- For a 64 bit system
+    2. C:\Program Files\Microsoft Visual Studio 14.0\VC\               -- For a 32 bit system
 
 2. You can install nasm to any directory and then set environment variable NASMPATH to point to the absolute directory of the installed nasm.exe (this path should include the final backslash).
 
