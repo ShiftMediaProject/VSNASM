@@ -41,17 +41,20 @@ if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
 REM Check if already running in an environment with VS setup
 if defined VCINSTALLDIR (
     if defined VisualStudioVersion (
-        echo Existing Visual Studio environment detected...
         if "%VisualStudioVersion%"=="16.0" (
+            echo Existing Visual Studio 2019 environment detected...
             set MSVC_VER=16
             goto MSVCVarsDone
         ) else if "%VisualStudioVersion%"=="15.0" (
+            echo Existing Visual Studio 2017 environment detected...
             set MSVC_VER=15
             goto MSVCVarsDone
         ) else if "%VisualStudioVersion%"=="14.0" (
+            echo Existing Visual Studio 2015 environment detected...
             set MSVC_VER=14
             goto MSVCVarsDone
         ) else if "%VisualStudioVersion%"=="12.0" (
+            echo Existing Visual Studio 2013 environment detected...
             set MSVC_VER=12
             goto MSVCVarsDone
         ) else (
