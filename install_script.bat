@@ -5,7 +5,7 @@ REM Defined cript variables
 set NASMDL=http://www.nasm.us/pub/nasm/releasebuilds
 set NASMVERSION=2.14.02
 set VSWHEREDL=https://github.com/Microsoft/vswhere/releases/download
-set VSWHEREVERSION=2.6.7
+set VSWHEREVERSION=2.8.4
 
 REM Store current directory and ensure working directory is the location of current .bat
 set CALLDIR=%CD%
@@ -16,8 +16,8 @@ set ERROR=0
 REM Check if being called from another instance
 if not "%~1"=="" (
     set MSVC_VER=%~1
-    set VSINSTANCEDIR=%2
     set ISINSTANCE=1
+    echo Installing VS%~1 customisations into %2
     goto MSVCCALL
 )
 
@@ -80,21 +80,21 @@ if not exist "%SCRIPTDIR%\vswhere.exe" (
 
 :VSwhereDetection
 REM Use vswhere to list detected installs
-for /f "usebackq tokens=1* delims=: " %%i in (`"%SCRIPTDIR%\vswhere.exe" -prerelease -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (
-    for /f "delims=" %%a in ('echo %%j ^| find "2019"') do (
+for /f "usebackq tokens=* delims=" %%i in (`"%SCRIPTDIR%\vswhere.exe" -prerelease -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (
+    for /f "delims=" %%a in ('echo %%i ^| find "2019"') do (
         if not "%%a"=="" (
             echo Visual Studio 2019 environment detected...
-            call "%~0" "16" "%%j"
+            call "%~0" "16" "%%i"
             if not ERRORLEVEL 1 (
                 set MSVC16=1
                 set MSVCFOUND=1
             )
         )
     )
-    for /f "delims=" %%a in ('echo %%j ^| find "2017"') do (
+    for /f "delims=" %%a in ('echo %%i ^| find "2017"') do (
         if not "%%a"=="" (
             echo Visual Studio 2017 environment detected...
-            call "%~0" "15" "%%j"
+            call "%~0" "15" "%%i"
             if not ERRORLEVEL 1 (
                 set MSVC15=1
                 set MSVCFOUND=1
@@ -104,26 +104,24 @@ for /f "usebackq tokens=1* delims=: " %%i in (`"%SCRIPTDIR%\vswhere.exe" -prerel
 )
 
 REM Try and use vswhere to detect legacy installs
-for /f "usebackq tokens=1* delims=: " %%i in (`"%SCRIPTDIR%\vswhere.exe" -legacy`) do (
-    if /i "%%i"=="installationPath" (
-        for /f "delims=" %%a in ('echo %%j ^| find "2015"') do (
-            if not "%%a"=="" (
-                echo Visual Studio 2015 environment detected...
-                call "%~0" "13" "%%j"
-                if not ERRORLEVEL 1 (
-                    set MSVC13=1
-                    set MSVCFOUND=1
-                )
+for /f "usebackq tokens=* delims=" %%i in (`"%SCRIPTDIR%\vswhere.exe" -legacy -property installationPath`) do (
+    for /f "delims=" %%a in ('echo %%i ^| find "2015"') do (
+        if not "%%a"=="" (
+            echo Visual Studio 2015 environment detected...
+            call "%~0" "13" "%%i"
+            if not ERRORLEVEL 1 (
+                set MSVC13=1
+                set MSVCFOUND=1
             )
         )
-        for /f "delims=" %%a in ('echo %%j ^| find "2013"') do (
-            if not "%%a"=="" (
-                echo Visual Studio 2013 environment detected...
-                call "%~0" "12" "%%j"
-                if not ERRORLEVEL 1 (
-                    set MSVC12=1
-                    set MSVCFOUND=1
-                )
+    )
+    for /f "delims=" %%a in ('echo %%i ^| find "2013"') do (
+        if not "%%a"=="" (
+            echo Visual Studio 2013 environment detected...
+            call "%~0" "12" "%%i"
+            if not ERRORLEVEL 1 (
+                set MSVC12=1
+                set MSVCFOUND=1
             )
         )
     )
@@ -223,13 +221,13 @@ if "%SYSARCH%"=="32" (
 )
 REM Call the required vcvars file in order to setup up build locations
 if "%MSVC_VER%"=="16" (
-    set VCVARS=%VSINSTANCEDIR%\VC\Auxiliary\Build\vcvars%SYSARCH%.bat
+    set VCVARS=%2\VC\Auxiliary\Build\vcvars%SYSARCH%.bat
 ) else if "%MSVC_VER%"=="15" (
-    set VCVARS=%VSINSTANCEDIR%\VC\Auxiliary\Build\vcvars%SYSARCH%.bat
+    set VCVARS=%2\VC\Auxiliary\Build\vcvars%SYSARCH%.bat
 ) else if "%MSVC_VER%"=="14" (
-    set VCVARS=%VSINSTANCEDIR%\VC\bin%MSVCVARSDIR%\vcvars%SYSARCH%.bat
+    set VCVARS=%2\VC\bin%MSVCVARSDIR%\vcvars%SYSARCH%.bat
 ) else if "%MSVC_VER%"=="12" (
-    set VCVARS=%VSINSTANCEDIR%\VC\bin%MSVCVARSDIR%\vcvars%SYSARCH%.bat
+    set VCVARS=%2\VC\bin%MSVCVARSDIR%\vcvars%SYSARCH%.bat
 ) else (
     echo Error: Invalid MSVC version!
     goto Terminate
