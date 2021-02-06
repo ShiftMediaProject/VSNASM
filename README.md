@@ -15,7 +15,7 @@ Supports Visual Studio 2010, 2012, 2013, 2015, 2017 and 2019.
 ## NASM
 
 The Netwide Assembler (NASM) is an assembler and disassembler for the Intel x86 architecture. It can be used to write 16-bit, 32-bit (IA-32) and 64-bit (x86-64) programs.
-For more information on NASM refer to the official site: [www.nasm.us](www.nasm.us).
+For more information on NASM refer to the official site: [www.nasm.us](https://www.nasm.us/).
 
 ## Installation
 
@@ -24,7 +24,7 @@ To use this script simply run '**install_script.bat**' from an elevated (i.e adm
 
 ## Manual Installation (optional)
 
-Alternatively, to manually install the extension you will first need to download the required win32 or win64 binary (depending on your system) from the official NASM website [www.nasm.us](www.nasm.us).
+Alternatively, to manually install the extension you will first need to download the required win32 or win64 binary (depending on your system) from the official NASM website [www.nasm.us](https://www.nasm.us/).
 
 From the download archive you will need to extract nasm.exe into a location that Visual Studio can see.
 To tell Visual Studio where to find nasm.exe you have several options:
@@ -48,7 +48,7 @@ For example the location for various Visual Studio versions on a 64 bit system w
     1. Visual Studio 2013: C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\BuildCustomizations
     2. Visual Studio 2015: C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\BuildCustomizations
     3. Visual Studio 2017: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\BuildCustomizations
-	4. Visual Studio 2019: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\BuildCustomizations
+    4. Visual Studio 2019: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\BuildCustomizations
 
 2. Copy these files to a convenient location and set that path in the 'Build Customisations Search Path' in the Visual Studio 'Projects and Solutions|VC++ Project Settings' item in the 'Tools|Options' menu.
 
