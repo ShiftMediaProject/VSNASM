@@ -23,6 +23,36 @@
     AssemblyName="Microsoft.Build.Tasks.v4.0">
     <Task>$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml</Task>
   </UsingTask>
+
+  <Target Name="_WriteNasmTlogs"
+          Condition="'@(NASM)' != '' and '@(SelectedFiles)' == ''">
+    <ItemGroup>
+      <NASM Remove="@(NASM)" Condition="'%(NASM.ExcludedFromBuild)' == 'true' or '%(NASM.ObjectFileName)' == ''" />
+    </ItemGroup>
+    <ItemGroup Condition="'@(NASM)' != ''">
+      <_NasmReadTlog Include="^%(NASM.FullPath);%(NASM.AdditionalDependencies)" />
+      <_NasmWriteTlog Include="^%(NASM.FullPath);$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '%(NASM.ObjectFileName)'))" />
+    </ItemGroup>
+
+    <WriteLinesToFile
+      Condition="'@(_NasmReadTlog)' != ''"
+      File="$(TLogLocation)Nasm.read.1u.tlog"
+      Lines="@(_NasmReadTlog->MetaData('Identity')->ToUpperInvariant());"
+      Overwrite="true"
+      Encoding="Unicode"/>
+    <WriteLinesToFile
+      Condition="'@(_NasmWriteTlog)' != ''"
+      File="$(TLogLocation)Nasm.write.1u.tlog"
+      Lines="@(_NasmWriteTlog->MetaData('Identity')->ToUpperInvariant());"
+      Overwrite="true"
+      Encoding="Unicode"/>
+
+    <ItemGroup>
+      <_NasmReadTlog Remove="@(_NasmReadTlog)" />
+      <_NasmWriteTlog Remove="@(_NasmWriteTlog)" />
+    </ItemGroup>
+  </Target>
+
   <Target
     Name="_NASM"
     BeforeTargets="$(NASMBeforeTargets)"
@@ -30,23 +60,14 @@
     Condition="'@(NASM)' != ''"
     Outputs="%(NASM.ObjectFileName)"
     Inputs="%(NASM.Identity);%(NASM.AdditionalDependencies);$(MSBuildProjectFile)"
-    DependsOnTargets="_SelectedFiles">
+    DependsOnTargets="_WriteNasmTlogs;_SelectedFiles">
     <ItemGroup Condition="'@(SelectedFiles)' != ''">
       <NASM Remove="@(NASM)" Condition="'%(Identity)' != '@(SelectedFiles)'" />
-    </ItemGroup>
-    <ItemGroup>
-      <NASM_tlog Include="%(NASM.ObjectFileName)" Condition="'%(NASM.ObjectFileName)' != '' and '%(NASM.ExcludedFromBuild)' != 'true'">
-        <Source>@(NASM, '|')</Source>
-      </NASM_tlog>
     </ItemGroup>
     <Message
       Condition="'@(NASM)' != '' and '%(NASM.ExcludedFromBuild)' != 'true'"
       Importance="High"
       Text="%(NASM.ExecutionDescription)" />
-    <WriteLinesToFile
-      Condition="'@(NASM_tlog)' != '' and '%(NASM_tlog.ExcludedFromBuild)' != 'true'"
-      File="$(IntDir)$(ProjectName).write.1.tlog"
-      Lines="^%(NASM_tlog.Source);@(NASM_tlog-&gt;'%(Fullpath)')"/>
     <NASM
       Condition="'@(NASM)' != '' and '%(NASM.ExcludedFromBuild)' != 'true'"
       Inputs="%(NASM.Inputs)"
