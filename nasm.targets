@@ -23,9 +23,9 @@
     AssemblyName="Microsoft.Build.Tasks.v4.0">
     <Task>$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml</Task>
   </UsingTask>
-
-  <Target Name="_WriteNasmTlogs"
-          Condition="'@(NASM)' != '' and '@(SelectedFiles)' == ''">
+  <Target
+    Name="_WriteNasmTlogs"
+    Condition="'@(NASM)' != '' and '@(SelectedFiles)' == ''">
     <ItemGroup>
       <NASM Remove="@(NASM)" Condition="'%(NASM.ExcludedFromBuild)' == 'true' or '%(NASM.ObjectFileName)' == ''" />
     </ItemGroup>
@@ -33,7 +33,6 @@
       <_NasmReadTlog Include="^%(NASM.FullPath);%(NASM.AdditionalDependencies)" />
       <_NasmWriteTlog Include="^%(NASM.FullPath);$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '%(NASM.ObjectFileName)'))" />
     </ItemGroup>
-
     <WriteLinesToFile
       Condition="'@(_NasmReadTlog)' != ''"
       File="$(TLogLocation)Nasm.read.1u.tlog"
@@ -46,13 +45,11 @@
       Lines="@(_NasmWriteTlog->MetaData('Identity')->ToUpperInvariant());"
       Overwrite="true"
       Encoding="Unicode"/>
-
     <ItemGroup>
       <_NasmReadTlog Remove="@(_NasmReadTlog)" />
       <_NasmWriteTlog Remove="@(_NasmWriteTlog)" />
     </ItemGroup>
   </Target>
-
   <Target
     Name="_NASM"
     BeforeTargets="$(NASMBeforeTargets)"
