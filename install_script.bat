@@ -267,7 +267,7 @@ if not ERRORLEVEL 1 (
 set /p MSBUILDDIR=<"%SCRIPTDIR%\msbuild.txt"
 del /F /Q "%SCRIPTDIR%\msbuild.txt" >nul 2>&1
 if "%MSVC_VER%"=="17" (
-    set VCTargetsPath="..\..\Microsoft\VC\v170\BuildCustomizations"
+    set VCTargetsPath="..\..\..\Microsoft\VC\v170\BuildCustomizations"
 ) else if "%MSVC_VER%"=="16" (
     set VCTargetsPath="..\..\Microsoft\VC\v160\BuildCustomizations"
 ) else if "%MSVC_VER%"=="15" (
@@ -282,8 +282,16 @@ if "%MSVC_VER%"=="17" (
 
 REM Convert the relative targets path to an absolute one
 set CURRDIR=%CD%
-pushd %MSBUILDDIR%
-pushd %VCTargetsPath%
+pushd %MSBUILDDIR% 2>nul
+if %ERRORLEVEL% neq 0 (
+    echo Error: Failed to get correct msbuild path!
+    goto Terminate
+)
+pushd %VCTargetsPath% 2>nul
+if %ERRORLEVEL% neq 0 (
+    echo Error: Unknown VCTargetsPath path!
+    goto Terminate
+)
 set VCTargetsPath=%CD%
 popd
 popd
