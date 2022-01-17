@@ -43,7 +43,7 @@ if defined VCINSTALLDIR (
     if defined VisualStudioVersion (
         if "%VisualStudioVersion%"=="17.0" (
             echo Existing Visual Studio 2022 environment detected...
-            set MSVC_VER=16
+            set MSVC_VER=17
             goto MSVCVarsDone
         ) else if "%VisualStudioVersion%"=="16.0" (
             echo Existing Visual Studio 2019 environment detected...
