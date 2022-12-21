@@ -3,7 +3,7 @@ setlocal
 
 REM Defined cript variables
 set NASMDL=http://www.nasm.us/pub/nasm/releasebuilds
-set NASMVERSION=2.15.05
+set NASMVERSION=2.16
 set VSWHEREDL=https://github.com/Microsoft/vswhere/releases/download
 set VSWHEREVERSION=2.8.4
 
