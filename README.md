@@ -10,7 +10,7 @@ VSNASM
 
 This project provides a set of build customisations that can be used within Visual Studio to compile assembly code using NASM.
 Provides Visual Studio integration for the NASM assembler.
-Supports Visual Studio 2010, 2012, 2013, 2015, 2017 and 2019.
+Supports Visual Studio 2010, 2012, 2013, 2015, 2017, 2019 and 2022.
 
 ## NASM
 
@@ -19,7 +19,7 @@ For more information on NASM refer to the official site: [www.nasm.us](https://w
 
 ## Installation
 
-The project provides a basic installer script that can automatically detect any installed Visual Studio 2013, 2015, 2017 or 2019 installation and then install the required components.
+The project provides a basic installer script that can automatically detect any installed Visual Studio 2013, 2015, 2017, 2019 and 2022 installation and then install the required components.
 To use this script simply run '**install_script.bat**' from an elevated (i.e administrator) command prompt.
 
 ## Manual Installation (optional)
