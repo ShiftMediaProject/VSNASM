@@ -3,7 +3,7 @@ setlocal
 
 REM Defined cript variables
 set NASMDL=http://www.nasm.us/pub/nasm/releasebuilds
-set NASMVERSION=2.16
+set NASMVERSION=2.16.01
 set VSWHEREDL=https://github.com/Microsoft/vswhere/releases/download
 set VSWHEREVERSION=2.8.4
 
@@ -314,6 +314,12 @@ if exist "%SCRIPTDIR%\nasm_%NASMVERSION%.zip" (
     echo Using existing NASM binary...
     goto InstallNASM
 )
+echo Checking for existing NASM in NASMPATH...
+%NASMPATH%\nasm.exe -v
+if ERRORLEVEL 0 (
+    echo Using existing NASM binary from %NASMPATH%...
+    goto SkipInstallNASM
+)
 set NASMDOWNLOAD=%NASMDL%/%NASMVERSION%/win%SYSARCH%/nasm-%NASMVERSION%-win%SYSARCH%.zip
 echo Downloading required NASM release binary...
 powershell.exe -Command (New-Object Net.WebClient).DownloadFile('%NASMDOWNLOAD%', '%SCRIPTDIR%\nasm_%NASMVERSION%.zip') >nul 2>&1
@@ -342,6 +348,7 @@ if %ERRORLEVEL% neq 0 (
     goto Terminate
 )
 rd /S /Q "%SCRIPTDIR%\TempNASMUnpack" >nul 2>&1
+:SkipInstallNASM
 echo Finished Successfully
 goto Exit
 
