@@ -315,7 +315,7 @@ if exist "%SCRIPTDIR%\nasm_%NASMVERSION%.zip" (
     goto InstallNASM
 )
 echo Checking for existing NASM in NASMPATH...
-%NASMPATH%\nasm.exe -v
+%NASMPATH%\nasm.exe -v >nul 2>&1
 if ERRORLEVEL 0 (
     echo Using existing NASM binary from %NASMPATH%...
     goto SkipInstallNASM
