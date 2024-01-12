@@ -74,7 +74,7 @@ if exist "%SCRIPTDIR%\vswhere.exe" (
 )
 set VSWHEREDOWNLOAD=%VSWHEREDL%/%VSWHEREVERSION%/vswhere.exe
 echo Downloading required vswhere release binary...
-powershell.exe -Command (New-Object Net.WebClient).DownloadFile('%VSWHEREDOWNLOAD%', '%SCRIPTDIR%\vswhere.exe') >nul 2>&1
+powershell.exe -Command "(New-Object Net.WebClient).DownloadFile('%VSWHEREDOWNLOAD%', '%SCRIPTDIR%\vswhere.exe')" >nul 2>&1
 if not exist "%SCRIPTDIR%\vswhere.exe" (
     echo Error: Failed to download required vswhere binary!
     echo    The following link could not be resolved "%VSWHEREDOWNLOAD%"
@@ -322,7 +322,7 @@ if ERRORLEVEL 0 (
 )
 set NASMDOWNLOAD=%NASMDL%/%NASMVERSION%/win%SYSARCH%/nasm-%NASMVERSION%-win%SYSARCH%.zip
 echo Downloading required NASM release binary...
-powershell.exe -Command (New-Object Net.WebClient).DownloadFile('%NASMDOWNLOAD%', '%SCRIPTDIR%\nasm_%NASMVERSION%.zip') >nul 2>&1
+powershell.exe -Command "(New-Object Net.WebClient).DownloadFile('%NASMDOWNLOAD%', '%SCRIPTDIR%\nasm_%NASMVERSION%.zip')" >nul 2>&1
 if not exist "%SCRIPTDIR%\nasm_%NASMVERSION%.zip" (
     echo Error: Failed to download required NASM binary!
     echo    The following link could not be resolved "%NASMDOWNLOAD%"
