@@ -22,6 +22,10 @@ For more information on NASM refer to the official site: [www.nasm.us](https://w
 The project provides a basic installer script that can automatically detect any installed Visual Studio 2013, 2015, 2017, 2019 and 2022 installation and then install the required components.
 To use this script simply run '**install_script.bat**' from an elevated (i.e administrator) command prompt.
 
+## Usage
+
+Once installed VSNASM adds an additional usable Build Customization into Visual Studio. To use VSNASM in a project you must enable the customization for any project requiring it by right clicking on the project in the Solution Explorer and selecting 'Build Dependencies -> Build Customisations..' and then selecting VSNASM from the available options.
+
 ## Manual Installation (optional)
 
 Alternatively, to manually install the extension you will first need to download the required win32 or win64 binary (depending on your system) from the official NASM website [www.nasm.us](https://www.nasm.us/).
