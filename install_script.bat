@@ -1,9 +1,9 @@
 @echo OFF
 setlocal
 
-REM Defined cript variables
+REM Defined script variables
 set NASMDL=http://www.nasm.us/pub/nasm/releasebuilds
-set NASMVERSION=2.16.01
+set NASMVERSION=2.16.03
 set VSWHEREDL=https://github.com/Microsoft/vswhere/releases/download
 set VSWHEREVERSION=2.8.4
 
