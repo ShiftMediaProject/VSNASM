@@ -309,16 +309,19 @@ if %ERRORLEVEL% neq 0 (
     echo    Ensure that this script is run in a shell with the necessary write privileges
     goto Terminate
 )
-REM Download the latest nasm binary for windows
-if exist "%SCRIPTDIR%\nasm_%NASMVERSION%.zip" (
-    echo Using existing NASM binary...
-    goto InstallNASM
-)
+REM Check if nasm is alredy found before trying to download it
 echo Checking for existing NASM in NASMPATH...
 %NASMPATH%\nasm.exe -v >nul 2>&1
-if ERRORLEVEL 0 (
+if %ERRORLEVEL% equ 0 (
     echo Using existing NASM binary from %NASMPATH%...
     goto SkipInstallNASM
+) else (
+    echo ..existing NASM not found in NASMPATH.
+)
+REM Download the latest nasm binary for windows
+if exist "%SCRIPTDIR%\nasm_%NASMVERSION%.zip" (
+    echo Using existing NASM archive...
+    goto InstallNASM
 )
 set NASMDOWNLOAD=%NASMDL%/%NASMVERSION%/win%SYSARCH%/nasm-%NASMVERSION%-win%SYSARCH%.zip
 echo Downloading required NASM release binary...
