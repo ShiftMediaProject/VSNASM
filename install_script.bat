@@ -311,7 +311,7 @@ if %ERRORLEVEL% neq 0 (
 )
 REM Check if nasm is alredy found before trying to download it
 echo Checking for existing NASM in NASMPATH...
-%NASMPATH%\nasm.exe -v >nul 2>&1
+"%NASMPATH%\nasm.exe" -v >nul 2>&1
 if %ERRORLEVEL% equ 0 (
     echo Using existing NASM binary from %NASMPATH%...
     goto SkipInstallNASM
