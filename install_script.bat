@@ -322,7 +322,7 @@ if exist "%NASMPATH%\nasm.exe" (
 )
 REM Download the latest nasm binary for windows
 if exist "%SCRIPTDIR%\nasm_%NASMVERSION%.zip" (
-    echo Using existing NASM installer archive...
+    echo Using existing NASM archive...
     goto InstallNASM
 )
 set NASMDOWNLOAD=%NASMDL%/%NASMVERSION%/win%SYSARCH%/nasm-%NASMVERSION%-win%SYSARCH%.zip
