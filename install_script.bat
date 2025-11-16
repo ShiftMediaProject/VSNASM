@@ -3,7 +3,7 @@ setlocal
 
 REM Defined script variables
 set NASMDL=http://www.nasm.us/pub/nasm/releasebuilds
-set NASMVERSION=2.16.03
+set NASMVERSION=3.01
 set VSWHEREDL=https://github.com/Microsoft/vswhere/releases/download
 set VSWHEREVERSION=3.1.7
 
@@ -41,7 +41,11 @@ if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
 REM Check if already running in an environment with VS setup
 if defined VCINSTALLDIR (
     if defined VisualStudioVersion (
-        if "%VisualStudioVersion%"=="17.0" (
+        if "%VisualStudioVersion%"=="18.0" (
+            echo Existing Visual Studio 2026 environment detected...
+            set MSVC_VER=18
+            goto MSVCVarsDone
+        ) else if "%VisualStudioVersion%"=="17.0" (
             echo Existing Visual Studio 2022 environment detected...
             set MSVC_VER=17
             goto MSVCVarsDone
@@ -85,6 +89,16 @@ if not exist "%SCRIPTDIR%\vswhere.exe" (
 :VSwhereDetection
 REM Use vswhere to list detected installs
 for /f "usebackq tokens=* delims=" %%i in (`"%SCRIPTDIR%\vswhere.exe" -prerelease -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do (
+    for /f "delims=" %%a in ('echo %%i ^| find "18"') do (
+        if not "%%a"=="" (
+            echo Visual Studio 2026 environment detected...
+            call "%~0" "18" "%%i"
+            if not ERRORLEVEL 1 (
+                set MSVC18=1
+                set MSVCFOUND=1
+            )
+        )
+    )
     for /f "delims=" %%a in ('echo %%i ^| find "2022"') do (
         if not "%%a"=="" (
             echo Visual Studio 2022 environment detected...
@@ -234,7 +248,9 @@ if "%SYSARCH%"=="32" (
     goto Terminate
 )
 REM Call the required vcvars file in order to setup up build locations
-if "%MSVC_VER%"=="17" (
+if "%MSVC_VER%"=="18" (
+    set VCVARS=%2\VC\Auxiliary\Build\vcvars%SYSARCH%.bat
+) else if "%MSVC_VER%"=="17" (
     set VCVARS=%2\VC\Auxiliary\Build\vcvars%SYSARCH%.bat
 ) else if "%MSVC_VER%"=="16" (
     set VCVARS=%2\VC\Auxiliary\Build\vcvars%SYSARCH%.bat
@@ -266,7 +282,9 @@ if not ERRORLEVEL 1 (
 )
 set /p MSBUILDDIR=<"%SCRIPTDIR%\msbuild.txt"
 del /F /Q "%SCRIPTDIR%\msbuild.txt" >nul 2>&1
-if "%MSVC_VER%"=="17" (
+if "%MSVC_VER%"=="18" (
+    set VCTargetsPath="..\..\..\Microsoft\VC\v180\BuildCustomizations"
+) else if "%MSVC_VER%"=="17" (
     set VCTargetsPath="..\..\..\Microsoft\VC\v170\BuildCustomizations"
 ) else if "%MSVC_VER%"=="16" (
     set VCTargetsPath="..\..\Microsoft\VC\v160\BuildCustomizations"
