@@ -11,7 +11,7 @@ VSNASM
 
 This project provides a set of build customisations that can be used within Visual Studio to compile assembly code using NASM.
 Provides Visual Studio integration for the NASM assembler.
-Supports Visual Studio 2010, 2012, 2013, 2015, 2017, 2019 and 2022.
+Supports Visual Studio 2010, 2012, 2013, 2015, 2017, 2019, 2022 and 2026.
 
 ## NASM
 
@@ -20,7 +20,7 @@ For more information on NASM refer to the official site: [www.nasm.us](https://w
 
 ## Installation
 
-The project provides a basic installer script that can automatically detect any installed Visual Studio 2013, 2015, 2017, 2019 and 2022 installation and then install the required components.
+The project provides a basic installer script that can automatically detect any installed Visual Studio 2013, 2015, 2017, 2019, 2022 and 2026 installation and then install the required components.
 To use this script simply run '**install_script.bat**' from an elevated (i.e administrator) command prompt.
 
 ## Usage
@@ -55,6 +55,7 @@ For example the location for various Visual Studio Community Edition versions on
     3. Visual Studio 2017: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\BuildCustomizations
     4. Visual Studio 2019: C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\BuildCustomizations
     5. Visual Studio 2022: C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\BuildCustomizations
+    6. Visual Studio 2026: C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VC\v180\BuildCustomizations
 
 2. Copy these files to a convenient location and set that path in the 'Build Customisations Search Path' in the Visual Studio 'Projects and Solutions|VC++ Project Settings' item in the 'Tools|Options' menu.
 
