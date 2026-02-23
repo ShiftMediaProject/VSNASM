@@ -7,86 +7,227 @@
       <Targets>_NASM</Targets>
     </AvailableItemName>
   </ItemGroup>
+
   <PropertyGroup>
     <ComputeLinkInputsTargets>
       $(ComputeLinkInputsTargets);
       ComputeNASMOutput;
     </ComputeLinkInputsTargets>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <ComputeLibInputsTargets>
       $(ComputeLibInputsTargets);
       ComputeNASMOutput;
     </ComputeLibInputsTargets>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <ComputeImpLibInputsTargets>
+      $(ComputeImpLibInputsTargets);
+      ComputeNASMOutput;
+    </ComputeImpLibInputsTargets>
+  </PropertyGroup>
+  
   <UsingTask
     TaskName="NASM"
     TaskFactory="XamlTaskFactory"
     AssemblyName="Microsoft.Build.Tasks.v4.0">
     <Task>$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml</Task>
   </UsingTask>
-  <Target
-    Name="_WriteNasmTlogs"
-    Condition="'@(NASM)' != '' and '@(SelectedFiles)' == ''">
+
+  <!-- *******************************************************************************************
+        NASM
+       ******************************************************************************************* -->
+
+  <PropertyGroup Condition="'$(NASMAfterTargets)'!='' or '$(NASMBeforeTargets)'!=''">
+    <NASMToolBeforeTargets>$(NASMBeforeTargets)</NASMToolBeforeTargets>
+    <NASMToolAfterTargets>$(NASMAfterTargets)</NASMToolAfterTargets>
+  </PropertyGroup>
+
+  <!--If no before/after targets are set, then set the default-->
+  <PropertyGroup Condition="'$(NASMAfterTargets)'=='' and '$(NASMBeforeTargets)'==''">
+    <NASMToolBeforeTargets>Midl</NASMToolBeforeTargets>
+    <NASMToolAfterTargets>PreBuildEvent</NASMToolAfterTargets>
+    <NASMBeforeTargets>PostBuildEvent</NASMBeforeTargets>
+    <NASMAfterTargets>BscMake</NASMAfterTargets>
+  </PropertyGroup>
+
+  <!--  If Selective File Build is enabled, then dont let custom interupt the build order-->
+  <PropertyGroup Condition="'$(SelectedFiles)'!=''">
+    <NASMToolBeforeTargets></NASMToolBeforeTargets>
+    <NASMToolAfterTargets></NASMToolAfterTargets>
+    <NASMBeforeTargets></NASMBeforeTargets>
+    <NASMAfterTargets></NASMAfterTargets>
+  </PropertyGroup>
+  
+  <Target Name="_NASM"
+          BeforeTargets="$(NASMToolBeforeTargets)"
+          AfterTargets="$(NASMToolAfterTargets)"
+          DependsOnTargets="SelectNASM;ComputeNASMOutput">
+
+    <PropertyGroup>
+      <CustomBuildToolArchitecture Condition="'$(CustomBuildToolArchitecture)' == ''">Native32Bit</CustomBuildToolArchitecture>
+    </PropertyGroup>
+
     <ItemGroup>
-      <NASM Remove="@(NASM)" Condition="'%(NASM.ExcludedFromBuild)' == 'true' or '%(NASM.ObjectFileName)' == ''" />
+      <NASM Update="@(NASM)">
+        <Inputs>%(NASM.FullPath);%(NASM.AdditionalDependencies);$(MSBuildProjectFile)</Inputs>
+        <AdditionalInputs>%(NASM.FullPath);%(NASM.AdditionalDependencies);$(MSBuildProjectFile)</AdditionalInputs>
+
+        <Message>%(NASM.ExecutionDescription)</Message>
+
+        <!-- option fragments used for [AllOptions] -->
+        <_NasmOpt_Debug></_NasmOpt_Debug>
+        <_NasmOpt_Prefix></_NasmOpt_Prefix>
+        <_NasmOpt_Postfix></_NasmOpt_Postfix>
+        <_NasmOpt_IncludePaths></_NasmOpt_IncludePaths>
+        <_NasmOpt_PreIncludeFiles></_NasmOpt_PreIncludeFiles>
+        <_NasmOpt_Defines></_NasmOpt_Defines>
+        <_NasmOpt_Undefines></_NasmOpt_Undefines>
+        <_NasmOpt_Werror></_NasmOpt_Werror>
+
+        <_NasmOpt_Debug Condition="'%(NASM.GenerateDebugInformation)' == 'true'">-g</_NasmOpt_Debug>
+        <_NasmOpt_Prefix Condition="'%(NASM.SymbolsPrefix)' != ''">--prefix %(NASM.SymbolsPrefix)</_NasmOpt_Prefix>
+        <_NasmOpt_Postfix Condition="'%(NASM.SymbolsPostfix)' != ''">--postfix %(NASM.SymbolsPostfix)</_NasmOpt_Postfix>
+        <_NasmOpt_IncludePaths Condition="'%(NASM.IncludePaths)' != ''">-I"$([System.String]::Copy('%(NASM.IncludePaths)').Trim(';').Replace(';', '/" -I"'))/"</_NasmOpt_IncludePaths>
+        <_NasmOpt_PreIncludeFiles Condition="'%(NASM.PreIncludeFiles)' != ''">-P"$([System.String]::Copy('%(NASM.PreIncludeFiles)').Trim(';').Replace(';', '" -P"'))"</_NasmOpt_PreIncludeFiles>
+        <_NasmOpt_Defines Condition="'%(NASM.PreprocessorDefinitions)' != ''">-D$([System.String]::Copy('%(NASM.PreprocessorDefinitions)').Trim(';').Replace(';', ' -D'))</_NasmOpt_Defines>
+        <_NasmOpt_Undefines Condition="'%(NASM.UndefinePreprocessorDefinitions)' != ''">-U$([System.String]::Copy('%(NASM.UndefinePreprocessorDefinitions)').Trim(';').Replace(';', ' -U'))</_NasmOpt_Undefines>
+        <_NasmOpt_Werror Condition="'%(NASM.TreatWarningsAsErrors)' == 'true'">-Werror</_NasmOpt_Werror>
+      </NASM>
     </ItemGroup>
-    <ItemGroup Condition="'@(NASM)' != ''">
-      <_NasmReadTlog Include="^%(NASM.FullPath);%(NASM.AdditionalDependencies)" />
-      <_NasmWriteTlog Include="^%(NASM.FullPath);$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '%(NASM.ObjectFileName)'))" />
-    </ItemGroup>
-    <WriteLinesToFile
-      Condition="'@(_NasmReadTlog)' != ''"
-      File="$(TLogLocation)Nasm.read.1u.tlog"
-      Lines="@(_NasmReadTlog->MetaData('Identity')->ToUpperInvariant());"
-      Overwrite="true"
-      Encoding="Unicode"/>
-    <WriteLinesToFile
-      Condition="'@(_NasmWriteTlog)' != ''"
-      File="$(TLogLocation)Nasm.write.1u.tlog"
-      Lines="@(_NasmWriteTlog->MetaData('Identity')->ToUpperInvariant());"
-      Overwrite="true"
-      Encoding="Unicode"/>
+
     <ItemGroup>
-      <_NasmReadTlog Remove="@(_NasmReadTlog)" />
-      <_NasmWriteTlog Remove="@(_NasmWriteTlog)" />
+      <NASM Update="@(NASM)">
+        <_NasmAllOptions>-o "%(NASM.Outputs)" %(NASM._NasmOpt_Debug) %(NASM._NasmOpt_Prefix) %(NASM._NasmOpt_Postfix) %(NASM._NasmOpt_IncludePaths) %(NASM._NasmOpt_PreIncludeFiles) %(NASM._NasmOpt_Defines) %(NASM._NasmOpt_Undefines) %(NASM._NasmOpt_Werror)</_NasmAllOptions>
+      </NASM>
     </ItemGroup>
-  </Target>
-  <Target
-    Name="_NASM"
-    BeforeTargets="$(NASMBeforeTargets)"
-    AfterTargets="$(NASMAfterTargets)"
-    Condition="'@(NASM)' != ''"
-    Outputs="%(NASM.ObjectFileName)"
-    Inputs="%(NASM.Identity);%(NASM.AdditionalDependencies);$(MSBuildProjectFile)"
-    DependsOnTargets="_WriteNasmTlogs;_SelectedFiles">
-    <ItemGroup Condition="'@(SelectedFiles)' != ''">
-      <NASM Remove="@(NASM)" Condition="'%(Identity)' != '@(SelectedFiles)'" />
+
+    <ItemGroup>
+      <NASM Update="@(NASM)">
+        <Command>$([System.String]::Copy('%(NASM.CommandLineTemplate)').Replace('[AllOptions]', '%(NASM._NasmAllOptions)').Replace('[AdditionalOptions]', '%(NASM.AdditionalOptions)'))</Command>
+      </NASM>
     </ItemGroup>
-    <Message
-      Condition="'@(NASM)' != '' and '%(NASM.ExcludedFromBuild)' != 'true'"
-      Importance="High"
-      Text="%(NASM.ExecutionDescription)" />
-    <NASM
-      Condition="'@(NASM)' != '' and '%(NASM.ExcludedFromBuild)' != 'true'"
-      Inputs="%(NASM.Inputs)"
-      ObjectFileName="%(NASM.ObjectFileName)"
-      SymbolsPrefix="%(NASM.SymbolsPrefix)"
-      SymbolsPostfix="%(NASM.SymbolsPostfix)"
-      GenerateDebugInformation="%(NASM.GenerateDebugInformation)"
-      IncludePaths="%(NASM.IncludePaths)"
-      PreIncludeFiles="%(NASM.PreIncludeFiles)"
-      PreprocessorDefinitions="%(NASM.PreprocessorDefinitions)"
-      UndefinePreprocessorDefinitions="%(NASM.UndefinePreprocessorDefinitions)"
-      TreatWarningsAsErrors="%(NASM.TreatWarningsAsErrors)"
-      CommandLineTemplate="%(NASM.CommandLineTemplate)"
-      AdditionalOptions="%(NASM.AdditionalOptions)"
+
+    <!-- delete old ParallelCustomBuild tlogs, same as CustomBuild -->
+    <GetOutOfDateItems
+      Sources                   ="@(_EmptyItemGroup)"
+      OutputsMetadataName       ="Outputs"
+      DependenciesMetadataName  ="AdditionalInputs"
+      CommandMetadataName       ="Command"
+      TLogDirectory             ="$(TLogLocation)"
+      TLogNamePrefix            ="ParallelNasmBuild"
+      TrackFileAccess           ="$(TrackFileAccess)"
+      />
+
+    <!-- Get out of date items for NASM (full build case) -->
+    <GetOutOfDateItems
+      Condition                 ="'$(SelectedFiles)' == ''"
+      Sources                   ="@(NASM)"
+      OutputsMetadataName       ="Outputs"
+      DependenciesMetadataName  ="AdditionalInputs"
+      CommandMetadataName       ="Command"
+      TLogDirectory             ="$(TLogLocation)"
+      TLogNamePrefix            ="NasmBuild"
+      TrackFileAccess           ="$(TrackFileAccess)"
+      CheckForInterdependencies ="true">
+      <Output TaskParameter="OutOfDateSources" ItemName="_NasmBuild" />
+    </GetOutOfDateItems>
+
+    <!-- Selected-files build: just take all NASM items -->
+    <ItemGroup Condition ="'$(SelectedFiles)' != ''">
+      <_NasmBuild Include="@(NASM)" />
+    </ItemGroup>
+
+    <!-- Build items which can be built in parallel (ignored for selected-files build) -->
+    <ItemGroup Condition="'$(SelectedFiles)' == ''">
+      <_ParallelNasmBuild Include="@(_NasmBuild)"
+                          Condition="'%(_NasmBuild.BuildInParallel)' == 'true' and '%(_NasmBuild.DependsOnAnotherItemOutput)' != 'true'" />
+    </ItemGroup>
+
+    <ParallelCustomBuild
+      Condition       ="'@(_ParallelNasmBuild)' != ''"
+      Sources         ="@(_ParallelNasmBuild)"
+      MaxProcesses    ="%(_ParallelNasmBuild.MaxProcesses)"
+      MaxItemsInBatch ="%(_ParallelNasmBuild.MaxItemsInBatch)"
+      AcceptableNonZeroExitCodes  ="%(_ParallelNasmBuild.AcceptableNonZeroExitCodes)"
+      StdOutEncoding  ="%(_ParallelNasmBuild.StdOutEncoding)"
+      StdErrEncoding  ="%(_ParallelNasmBuild.StdErrEncoding)"
+      UseMsbuildResourceManager ="$(UseMsbuildResourceManager)"
     />
+
+    <!-- build the remaining items sequentially -->
+    <ItemGroup Condition="'@(_ParallelNasmBuild)' != ''">
+      <_NasmBuild Remove="@(_ParallelNasmBuild)" />
+      <_ParallelNasmBuild Remove="@(_ParallelNasmBuild)" />
+    </ItemGroup>
+
+    <CustomBuild Condition ="'@(_NasmBuild)' != ''"
+      Sources                     ="@(_NasmBuild)"
+      BuildSuffix                 ="$(_BuildSuffix)"
+      MinimalRebuildFromTracking  ="false"
+      AcceptableNonZeroExitCodes  ="%(_NasmBuild.AcceptableNonZeroExitCodes)"
+      StdOutEncoding              ="%(_NasmBuild.StdOutEncoding)"
+      StdErrEncoding              ="%(_NasmBuild.StdErrEncoding)">
+    </CustomBuild>
+
+    <ItemGroup Condition="'@(_NasmBuild)' != ''">
+      <_NasmBuild Remove="@(_NasmBuild)" />
+    </ItemGroup>
+
   </Target>
-  <Target
-    Name="ComputeNASMOutput"
-    Condition="'@(NASM)' != ''">
+
+  <Target Name="SelectNASM" DependsOnTargets="_SelectedFiles">
+    <ItemGroup Condition="'@(SelectedFiles)'!=''">
+      <NASM Remove="@(NASM)" Condition="'%(Identity)'!='@(SelectedFiles)'"/>
+      <NASM>
+        <MinimalRebuildFromTracking>false</MinimalRebuildFromTracking>
+      </NASM>
+    </ItemGroup>
     <ItemGroup>
-      <Link Include="@(NASM->Metadata('ObjectFileName')->Distinct()->ClearMetadata())" Condition="'%(NASM.ExcludedFromBuild)' != 'true'"/>
-      <Lib Include="@(NASM->Metadata('ObjectFileName')->Distinct()->ClearMetadata())" Condition="'%(NASM.ExcludedFromBuild)' != 'true'"/>
+      <NASM Update="@(NASM)">
+        <Outputs Condition="'%(NASM.ObjectFileName)' != ''">%(NASM.ObjectFileName)</Outputs>
+      </NASM>
     </ItemGroup>
   </Target>
+  
+
+  <Target Name="ComputeNASMOutput" DependsOnTargets="SelectNASM" >
+    
+    <ItemGroup >
+      <NASMOutputs Include="@(NASM->Metadata('Outputs'))" Condition="'@(NASM)' != ''"/>
+      
+      <NASMOutputs Condition="'%(NASMOutputs.ExcludedFromBuild)'!='true'
+                                 and '%(NASMOutputs.OutputItemType)'==''
+                                 and '%(NASMOutputs.LinkObjects)'=='true'
+                                 and ('%(Extension)'=='.obj' or '%(Extension)'=='.res' or '%(Extension)'=='.rsc' or '%(Extension)'=='.lib')">
+        <OutputItemType Condition="'$(ConfigurationType)'=='StaticLibrary'">Lib</OutputItemType>
+        <OutputItemType Condition="'$(ConfigurationType)'!='StaticLibrary'">Link</OutputItemType>
+      </NASMOutputs>
+    </ItemGroup>
+
+    <!-- Add NASM Outputs to lib, link or other tools -->
+    <CreateItem
+        Include="@(NASMOutputs)"
+        Condition="'%(NASMOutputs.OutputItemType)'!=''">
+      <Output
+          TaskParameter="Include"
+          ItemName="%(NASMOutputs.OutputItemType)"/>
+      <Output
+          TaskParameter="Include"
+          Condition="'%(NASMOutputs.OutputItemType)' == 'Link' and '$(GenerateImportLib)'=='true'"
+          ItemName="ImpLib"/>
+    </CreateItem>
+
+    <MakeDir Directories="@(NASMOutputs->'%(RootDir)%(Directory)')" />
+
+    <!-- Cleanup -->
+    <ItemGroup>
+      <NASMOutputs Remove="@(NASMOutputs)" />
+    </ItemGroup>
+    
+  </Target>
+
+
 </Project>
