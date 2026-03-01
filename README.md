@@ -7,19 +7,6 @@ VSNASM
 [![license](https://img.shields.io/github/license/ShiftMediaProject/VSNASM.svg)](https://github.com/ShiftMediaProject/VSNASM)
 [![donate](https://img.shields.io/badge/donate-link-brightgreen.svg)](https://shiftmediaproject.github.io/8-donate/)
 
-## New Version 2.0
-
-### Major Update with Parallel Build Support
-
-**Changes**
-
-- Added support for PARALLEL NASM builds
-- Proper change detection for NASM files  
-  (rebuilds when the NASM file or its dependencies have changed)
-- Incremental Builds working reliably
-- Clean is working properly
-  (doesn't start building NASM files when you clean the project)
-
 ## About
 
 This project provides a set of build customisations that can be used within Visual Studio to compile assembly code using NASM.

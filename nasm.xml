@@ -18,7 +18,6 @@
       <Category Name="All Options" DisplayName="All Options" Subtype="Search" />
       <Category Name="Command Line" DisplayName="Command Line" Subtype="CommandLine" />
     </Rule.Categories>
-    
     <!-- General -->
     <StringListProperty
       Name="IncludePaths"
@@ -74,7 +73,6 @@
           HasConfigurationCondition="true" />
       </DynamicEnumProperty.DataSource>
     </DynamicEnumProperty>
-    
     <BoolProperty
         Name="BuildInParallel"
         Category="General"
@@ -96,15 +94,13 @@
         F1Keyword="VC.Project.VCCustomBuildTool.MaxProcesses"
         Description="Maximum number of items to execute together during parallel build. A value of 0 divides items evenly into parallel batches. A value of 1 disables batching. Larger batches will improve performance if the custom build tool processes items quickly.">
     </IntProperty>
-    
     <!-- Assembler Options -->
-    
     <StringProperty
       Name="Outputs"
       Category="Assembler Options"
       DisplayName="Output File Name"
       Description="Specify Output Filename."
-      HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.1"  
+      HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.1"
       Switch="-o &quot;[value]&quot;" />
     <BoolProperty
       Name="GenerateDebugInformation"
@@ -119,7 +115,7 @@
       DisplayName="Symbols Prefix"
       Description="Prepend the given argument to all global or extern variables."
       HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.27"
-      IncludeInCommandLine="False" 
+      IncludeInCommandLine="False"
       Switch="--prefix [value]" />
     <StringProperty
       Name="SymbolsPostfix"
@@ -127,7 +123,7 @@
       DisplayName="Symbols Postfix"
       Description="Append the given argument to all global or extern variables."
       HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.27"
-      IncludeInCommandLine="False" 
+      IncludeInCommandLine="False"
       Switch="--postfix [value]" />
     <BoolProperty
       Name="TreatWarningsAsErrors"
@@ -135,12 +131,9 @@
       DisplayName="Treat Warnings As Errors"
       Description="Returns an error code if warnings are generated."
       HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.24"
-      IncludeInCommandLine="False" 
+      IncludeInCommandLine="False"
       Switch="-Werror" />
-
-
     <!-- Preprocessor -->
-
     <StringListProperty
       Name="PreprocessorDefinitions"
       Category="Preprocessor"
@@ -155,9 +148,7 @@
       Description="Undefines a text macro with the given name."
       HelpUrl="http://www.nasm.us/doc/nasmdoc2.html#section-2.1.19"
       Switch="-U[value]" />
-      
     <!-- Command Line -->
-
     <StringProperty
       Name="Inputs"
       Category="Command Line"
@@ -176,10 +167,7 @@
       DisplayName="Additional Options"
       Description="Additional Options">
     </StringProperty>
-
-      
     <!-- Hidden -->
-
     <StringProperty
       Name="CommandLineTemplate"
       DisplayName="Command Line"
@@ -195,7 +183,6 @@
       DisplayName="Additional Dependencies"
       IncludeInCommandLine="False"
       Visible="False" />
-      
   </Rule>
   <ItemType
     Name="NASM"
