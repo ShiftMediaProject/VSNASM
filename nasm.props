@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup
-    Condition="'$(NASMBeforeTargets)' == '' and '$(NASMAfterTargets)' == '' and '$(ConfigurationType)' != 'Makefile'">
-    <NASMBeforeTargets>Midl</NASMBeforeTargets>
-    <NASMAfterTargets>CustomBuild</NASMAfterTargets>
-  </PropertyGroup>
   <PropertyGroup>
     <NasmPath Condition= "'$(NASMPATH)' == ''">$(VCInstallDir)</NasmPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <NASM>
-      <ObjectFileName>$(IntDir)%(FileName).obj</ObjectFileName>
+      <Outputs>$(IntDir)%(FileName).obj</Outputs>
       <CommandLineTemplate Condition="'$(Platform)' == 'Win32'">"$(NasmPath)\nasm.exe" -Xvc -f win32 [AllOptions] [AdditionalOptions] "%(FullPath)"</CommandLineTemplate>
       <CommandLineTemplate Condition="'$(Platform)' == 'x64'">"$(NasmPath)\nasm.exe" -Xvc -f win64 [AllOptions] [AdditionalOptions] "%(FullPath)"</CommandLineTemplate>
-      <CommandLineTemplate Condition="'$(Platform)' != 'Win32' and '$(Platform)' != 'x64'">echo NASM not supported on this platform
-exit 1</CommandLineTemplate>
+      <CommandLineTemplate Condition="'$(Platform)' != 'Win32' and '$(Platform)' != 'x64'">echo NASM not supported on this platform &amp; exit 1</CommandLineTemplate>
       <ExecutionDescription>%(Identity)</ExecutionDescription>
+      <Message                     Condition="'%(NASM.Message)'                     == ''">Performing NASM Compilation</Message>
+      <LinkObjects                 Condition="'%(NASM.LinkObjects)'                 == ''">true</LinkObjects>
+      <TreatOutputAsContent        Condition="'%(NASM.TreatOutputAsContent)'        == ''">false</TreatOutputAsContent>
+      <TrackerLogDirectory         Condition="'%(NASM.TrackerLogDirectory)'         == ''">$(TLogLocation)</TrackerLogDirectory>
+      <MinimalRebuildFromTracking  Condition="'%(NASM.MinimalRebuildFromTracking)'  == ''">true</MinimalRebuildFromTracking>
+      <OutputItemType              Condition="'%(NASM.OutputItemType)'              == ''">Object</OutputItemType>
+      <BuildInParallel             Condition="'%(NASM.BuildInParallel)'             == ''">true</BuildInParallel>
+      <MaxProcesses                Condition="'%(NASM.MaxProcesses)'                == ''">0</MaxProcesses>
+      <MaxItemsInBatch             Condition="'%(NASM.MaxItemsInBatch)'             == ''">1</MaxItemsInBatch>
+      <VerifyInputsAndOutputsExist Condition="'%(NASM.VerifyInputsAndOutputsExist)' == ''">true</VerifyInputsAndOutputsExist>
     </NASM>
   </ItemDefinitionGroup>
 </Project>
