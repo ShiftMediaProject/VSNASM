@@ -332,10 +332,10 @@ echo Checking for existing NASM in NASMPATH...
 if exist "%NASMPATH%\nasm.exe" (
     "%NASMPATH%\nasm.exe" -v >nul 2>&1
     if %ERRORLEVEL% equ 0 (
-        echo "Using existing NASM binary from %NASMPATH%\nasm.exe..."
+        echo Using existing NASM binary from "%NASMPATH%\nasm.exe"...
         goto SkipInstallNASM
     ) else (
-        echo "..existing NASM not found in NASMPATH=%NASMPATH%."
+        echo Warning: A suitable nasm was not found in NASMPATH="%NASMPATH%".
     )
 )
 REM Download the latest nasm binary for windows
